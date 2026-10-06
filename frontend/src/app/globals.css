@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-featherGreen: #58CC02;
+  --color-featherGreenShadow: #58A700;
+  --color-maskGreen: #89E219;
+  --color-feedbackGreenBg: #D7FFB8;
+  --color-cardinal: #FF4B4B;
+  --color-cardinalShadow: #EA2B2B;
+  --color-feedbackRedBg: #FFDFE0;
+  --color-macaw: #1CB0F6;
+  --color-macawShadow: #1899D6;
+  --color-selectedCardBg: #DDF4FF;
+  --color-bee: #FFC800;
+  --color-fox: #FF9600;
+  --color-beetle: #CE82FF;
+  --color-eel: #4B4B4B;
+  --color-wolf: #777777;
+  --color-hare: #AFAFAF;
+  --color-swan: #E5E5E5;
+  --color-polar: #F7F7F7;
+  --color-snow: #FFFFFF;
+  --font-nunito: var(--font-nunito), "Nunito", sans-serif;
+}
+
+:root {
+  --background: #FFFFFF;
+  --foreground: #4B4B4B;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-nunito), "Nunito", sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Duolingo Bounce Animation for Active Node Callout */
+@keyframes duolingo-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: duolingo-bounce 1.5s ease-in-out infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #E5E5E5;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #AFAFAF;
+}

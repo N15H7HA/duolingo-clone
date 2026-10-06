@@ -3,6 +3,7 @@ backend/*/__pycache__/
 backend/*.pyc
 backend/.pytest_cache/
 backend/venv/
+backend/.venv/
 backend/.env
 backend/duolingo.db
 backend/duolingo.db-wal
