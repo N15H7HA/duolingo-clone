@@ -75,6 +75,45 @@ body {
   animation: duolingo-bounce 1.5s ease-in-out infinite;
 }
 
+/* Duolingo Question Shake on Mistake */
+@keyframes duolingo-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-8px);
+  }
+  40%, 80% {
+    transform: translateX(8px);
+  }
+}
+
+.animate-shake {
+  animation: duolingo-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Duolingo Heart Break / Loss Pulse */
+@keyframes heart-pulse-loss {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.35);
+    filter: drop-shadow(0 0 10px rgba(255, 75, 75, 0.8));
+  }
+  60% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px transparent);
+  }
+}
+
+.animate-heart-loss {
+  animation: heart-pulse-loss 0.6s ease-in-out;
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 8px;

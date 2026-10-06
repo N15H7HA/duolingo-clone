@@ -26,14 +26,16 @@ interface LessonState {
   selectedWords: string[];
   status: LessonStatus;
   hearts: number;
+  heartLostTrigger: boolean;
   feedback: {
     correct: boolean;
     solution?: string;
     accent_warning?: boolean;
+    cheerTitle?: string;
   } | null;
-  requeueQueue: StrippedExercise[];
   mistakesCount: number;
   completedCount: number;
+  uniqueCorrectIds: number[];
   totalInitialExercises: number;
   startTime: number;
   completionResult: AttemptCompleteResponse | null;
@@ -51,6 +53,8 @@ interface LessonState {
   abandonLesson: () => void;
 }
 
+const CORRECT_CHEERS = ["Amazing!", "Nicely done!", "Great job!", "Superb!", "Spot on!"];
+
 export const useLessonStore = create<LessonState>((set, get) => ({
   attemptId: null,
   lessonId: null,
@@ -62,10 +66,11 @@ export const useLessonStore = create<LessonState>((set, get) => ({
   selectedWords: [],
   status: "idle",
   hearts: 5,
+  heartLostTrigger: false,
   feedback: null,
-  requeueQueue: [],
   mistakesCount: 0,
   completedCount: 0,
+  uniqueCorrectIds: [],
   totalInitialExercises: 0,
   startTime: Date.now(),
   completionResult: null,
@@ -74,7 +79,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
 
   startLesson: async (lessonId, isPractice = false) => {
     console.log(`[LessonStore] Starting lesson session (ID: ${lessonId}, isPractice: ${isPractice})`);
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null, heartLostTrigger: false });
     try {
       const endpoint = isPractice ? "/practice/start" : `/lessons/${lessonId}/start`;
       const data = await fetchApi<LessonStartResponse>(endpoint, {
@@ -96,9 +101,9 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         selectedWords: [],
         status: "idle",
         feedback: null,
-        requeueQueue: [],
         mistakesCount: 0,
         completedCount: 0,
+        uniqueCorrectIds: [],
         totalInitialExercises: data.exercises.length,
         startTime: Date.now(),
         completionResult: null,
@@ -146,13 +151,23 @@ export const useLessonStore = create<LessonState>((set, get) => ({
   },
 
   submitAnswer: async () => {
-    const { attemptId, exercises, currentIndex, selectedAnswer, status, requeueQueue } = get();
+    const {
+      attemptId,
+      exercises,
+      currentIndex,
+      selectedAnswer,
+      status,
+      uniqueCorrectIds,
+      totalInitialExercises,
+    } = get();
+
     if (status !== "idle" || !selectedAnswer || attemptId === null) return;
 
     const currentExercise = exercises[currentIndex];
     set({ status: "checking" });
 
     try {
+      const isRetry = currentIndex >= totalInitialExercises;
       const fb = await fetchApi<AnswerFeedbackResponse>(
         `/attempts/${attemptId}/answer`,
         {
@@ -160,32 +175,41 @@ export const useLessonStore = create<LessonState>((set, get) => ({
           body: JSON.stringify({
             exercise_id: currentExercise.id,
             submitted_answer: selectedAnswer,
-            is_retry: currentIndex >= get().totalInitialExercises,
+            is_retry: isRetry,
           }),
         }
       );
 
       if (fb.correct) {
+        const newUnique = uniqueCorrectIds.includes(currentExercise.id)
+          ? uniqueCorrectIds
+          : [...uniqueCorrectIds, currentExercise.id];
+
+        const randomCheer = CORRECT_CHEERS[Math.floor(Math.random() * CORRECT_CHEERS.length)];
+
         set({
           status: "correct",
           hearts: fb.hearts,
+          uniqueCorrectIds: newUnique,
+          completedCount: newUnique.length,
+          heartLostTrigger: false,
           feedback: {
             correct: true,
             solution: fb.solution,
             accent_warning: fb.accent_warning,
+            cheerTitle: randomCheer,
           },
         });
       } else {
-        // Add to requeue list if not already queued
-        const newRequeue = [...requeueQueue];
-        if (!newRequeue.some((e) => e.id === currentExercise.id)) {
-          newRequeue.push(currentExercise);
-        }
+        // Persistent Retry Queue (Spaced Repetition Loop):
+        // Append failed exercise to the end of the exercises queue
+        const updatedExercises = [...exercises, currentExercise];
 
         set({
           status: fb.out_of_hearts ? "out_of_hearts" : "incorrect",
           hearts: fb.hearts,
-          requeueQueue: newRequeue,
+          heartLostTrigger: true,
+          exercises: updatedExercises,
           mistakesCount: get().mistakesCount + 1,
           feedback: {
             correct: false,
@@ -201,18 +225,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
   },
 
   nextExercise: async () => {
-    const {
-      attemptId,
-      exercises,
-      currentIndex,
-      requeueQueue,
-      status,
-      startTime,
-      completedCount,
-    } = get();
-
-    const wasCorrect = status === "correct";
-    const nextCompleted = wasCorrect ? completedCount + 1 : completedCount;
+    const { attemptId, exercises, currentIndex, startTime, completedCount } = get();
 
     if (currentIndex + 1 < exercises.length) {
       set({
@@ -221,20 +234,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         selectedWords: [],
         status: "idle",
         feedback: null,
-        completedCount: nextCompleted,
-      });
-    } else if (requeueQueue.length > 0) {
-      // Re-append failed exercises for repeat attempt
-      const newExercises = [...exercises, ...requeueQueue];
-      set({
-        exercises: newExercises,
-        currentIndex: currentIndex + 1,
-        requeueQueue: [],
-        selectedAnswer: null,
-        selectedWords: [],
-        status: "idle",
-        feedback: null,
-        completedCount: nextCompleted,
+        heartLostTrigger: false,
       });
     } else {
       // Lesson complete
@@ -250,9 +250,10 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         set({
           status: "completed",
           completionResult: comp,
-          completedCount: nextCompleted,
+          completedCount: completedCount,
         });
       } catch (err: unknown) {
+        console.error("[LessonStore] Complete error:", err);
         const msg = err instanceof Error ? err.message : "Failed to complete lesson";
         set({ error: msg, status: "completed" });
       }
@@ -269,7 +270,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
       selectedWords: [],
       status: "idle",
       feedback: null,
-      requeueQueue: [],
+      heartLostTrigger: false,
       completionResult: null,
     });
   },

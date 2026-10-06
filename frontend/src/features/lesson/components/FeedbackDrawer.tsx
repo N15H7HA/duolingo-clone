@@ -13,6 +13,7 @@ interface FeedbackDrawerProps {
     correct: boolean;
     solution?: string;
     accent_warning?: boolean;
+    cheerTitle?: string;
   } | null;
   hasSelection: boolean;
   onCheck: () => void;
@@ -52,7 +53,7 @@ export default function FeedbackDrawer({
     <>
       <footer
         className={clsx(
-          "fixed bottom-0 left-0 right-0 z-50 transition-all duration-200 ease-out border-t-2 select-none py-6 px-4 sm:px-8",
+          "fixed bottom-0 left-0 right-0 z-50 transition-transform duration-250 ease-[cubic-bezier(0.2,0.8,0.2,1)] border-t-2 select-none py-6 px-4 sm:px-8 shadow-2xl",
           status === "correct"
             ? "bg-feedbackGreenBg border-[#58A700]"
             : status === "incorrect"
@@ -69,7 +70,9 @@ export default function FeedbackDrawer({
               </div>
               <div>
                 <h3 className="text-xl sm:text-2xl font-extrabold text-[#58A700] dark:text-[#89E219]">
-                  {feedback?.accent_warning ? "Nicely done! (Pay attention to accents)" : "Nicely done!"}
+                  {feedback?.accent_warning
+                    ? "Nicely done! (Pay attention to accents)"
+                    : feedback?.cheerTitle || "Nicely done!"}
                 </h3>
                 {feedback?.accent_warning && (
                   <p className="text-xs sm:text-sm font-bold text-[#58A700] dark:text-[#89E219]">

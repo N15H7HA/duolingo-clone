@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useLessonStore } from "@/features/lesson/store/useLessonStore";
 import LessonHeader from "@/features/lesson/components/LessonHeader";
 import FeedbackDrawer from "@/features/lesson/components/FeedbackDrawer";
+import clsx from "clsx";
 
 // Exercise Components
 import SelectExercise from "@/features/lesson/components/exercises/SelectExercise";
@@ -27,6 +28,7 @@ export default function LessonPlayerPage() {
     selectedWords,
     status,
     hearts,
+    heartLostTrigger,
     feedback,
     lessonTitle,
     completionResult,
@@ -46,7 +48,7 @@ export default function LessonPlayerPage() {
     abandonLesson,
   } = useLessonStore();
 
-  // 2. Initialize session on mount (Hook 1)
+  // 2. Initialize session on mount
   useEffect(() => {
     if (lessonId) {
       console.log(`[LessonPlayerPage] Mounting lesson session for ID: ${lessonId}`);
@@ -59,7 +61,28 @@ export default function LessonPlayerPage() {
     };
   }, [lessonId, startLesson, abandonLesson]);
 
-  // 3. Navigate on completion (Hook 2 - must run unconditionally before any early returns)
+  // 3. Global Enter key listener for instant check / continue
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const currentEx = exercises[currentIndex];
+        const hasSel = Boolean(
+          selectedAnswer || (currentEx?.type === "translate" && selectedWords.length > 0)
+        );
+
+        if (status === "idle" && hasSel) {
+          submitAnswer();
+        } else if (status === "correct" || status === "incorrect") {
+          nextExercise();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [status, selectedAnswer, selectedWords, exercises, currentIndex, submitAnswer, nextExercise]);
+
+  // 4. Navigate on completion (must run unconditionally before any early returns)
   useEffect(() => {
     if (status === "completed" && completionResult) {
       const accuracy = Math.round(
@@ -77,7 +100,7 @@ export default function LessonPlayerPage() {
     }
   }, [status, completionResult, totalInitialExercises, mistakesCount, startTime, lessonTitle, lessonId, router]);
 
-  // 4. Early returns ONLY after all hooks are declared
+  // 5. Early returns ONLY after all hooks are declared
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-snow">
@@ -136,7 +159,7 @@ export default function LessonPlayerPage() {
   const currentExercise = exercises[currentIndex];
   if (!currentExercise) return null;
 
-  // Calculate smooth progress percentage
+  // Calculate smooth progress percentage strictly based on unique correct exercises
   const total = Math.max(1, totalInitialExercises || exercises.length);
   const progressPercentage = (completedCount / total) * 100;
 
@@ -147,24 +170,30 @@ export default function LessonPlayerPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-snow select-none pb-32">
-      {/* Top Header */}
+      {/* Top Header with Progress and Animated Heart Counter */}
       <LessonHeader
         progressPercentage={progressPercentage}
         hearts={hearts}
+        heartLostTrigger={heartLostTrigger}
         onQuit={abandonLesson}
       />
 
-      {/* Main Exercise View */}
+      {/* Main Exercise View with Horizontal Error Shake on Mistake */}
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 sm:px-8 py-6 flex flex-col justify-center">
-        <div className="space-y-6">
+        <div
+          className={clsx(
+            "space-y-6 transition-transform",
+            status === "incorrect" ? "animate-shake" : ""
+          )}
+        >
           <h2 className="text-2xl sm:text-3xl font-black text-eel">
             {currentExercise.prompt}
           </h2>
 
-          {/* Render Exercise Type with Key to ensure clean remounts without hook bleed */}
+          {/* Render Exercise Type with Key to ensure clean remounts without state leakage */}
           {currentExercise.type === "select" && (
             <SelectExercise
-              key={currentExercise.id}
+              key={`${currentExercise.id}-${currentIndex}`}
               exercise={currentExercise}
               value={selectedAnswer}
               onChange={selectOption}
@@ -174,7 +203,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "translate" && (
             <TranslateExercise
-              key={currentExercise.id}
+              key={`${currentExercise.id}-${currentIndex}`}
               exercise={currentExercise}
               selectedWords={selectedWords}
               onAddWord={addWordTile}
@@ -186,7 +215,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "fill_blank" && (
             <FillBlankExercise
-              key={currentExercise.id}
+              key={`${currentExercise.id}-${currentIndex}`}
               exercise={currentExercise}
               value={selectedAnswer}
               onChange={selectOption}
@@ -196,7 +225,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "match_pairs" && (
             <MatchPairsExercise
-              key={currentExercise.id}
+              key={`${currentExercise.id}-${currentIndex}`}
               exercise={currentExercise}
               onChange={selectOption}
               disabled={status === "correct" || status === "incorrect"}
@@ -205,7 +234,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "type_answer" && (
             <TypeAnswerExercise
-              key={currentExercise.id}
+              key={`${currentExercise.id}-${currentIndex}`}
               exercise={currentExercise}
               value={selectedAnswer}
               onChange={selectOption}

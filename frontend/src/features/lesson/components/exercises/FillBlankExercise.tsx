@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { StrippedExercise } from "@/types";
 import clsx from "clsx";
 
@@ -17,6 +17,19 @@ export default function FillBlankExercise({
   onChange,
   disabled = false,
 }: FillBlankProps) {
+  // Numeric keyboard shortcut listener (1, 2, 3, 4)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (disabled) return;
+      const num = parseInt(e.key, 10);
+      if (num >= 1 && num <= exercise.options.length) {
+        onChange(exercise.options[num - 1].text);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [exercise.options, disabled, onChange]);
+
   // Parse sentence around the blank '___'
   const parts = exercise.source_text.split("___");
   const prefix = parts[0] || "";
@@ -43,10 +56,11 @@ export default function FillBlankExercise({
         <span>{suffix}</span>
       </div>
 
-      {/* Choice Chips */}
-      <div className="flex flex-wrap gap-3 justify-center">
-        {exercise.options.map((opt) => {
+      {/* Choice Chips with Numeric Shortcuts */}
+      <div className="flex flex-wrap gap-3.5 justify-center">
+        {exercise.options.map((opt, index) => {
           const isSelected = value === opt.text;
+          const badgeNum = index + 1;
 
           return (
             <button
@@ -55,14 +69,24 @@ export default function FillBlankExercise({
               disabled={disabled}
               onClick={() => onChange(opt.text)}
               className={clsx(
-                "px-6 py-3.5 rounded-2xl font-extrabold text-base sm:text-lg border-2 border-b-4 transition-all duration-75 shadow-sm",
+                "relative flex items-center gap-3 px-6 py-3.5 rounded-2xl font-extrabold text-base sm:text-lg border-2 border-b-4 transition-all duration-75 shadow-sm",
                 disabled ? "cursor-default" : "cursor-pointer active:translate-y-[2px] active:border-b-2",
                 isSelected
                   ? "bg-selectedCardBg border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
                   : "bg-snow border-swan border-b-swan/80 hover:bg-polar text-eel"
               )}
             >
-              {opt.text}
+              <span>{opt.text}</span>
+              <span
+                className={clsx(
+                  "text-xs font-black px-2 py-0.5 rounded-lg border",
+                  isSelected
+                    ? "border-[#1CB0F6] text-[#1CB0F6] bg-snow"
+                    : "border-swan text-wolf bg-polar"
+                )}
+              >
+                {badgeNum}
+              </span>
             </button>
           );
         })}

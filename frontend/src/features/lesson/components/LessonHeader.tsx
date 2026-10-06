@@ -4,16 +4,19 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, Heart } from "lucide-react";
 import Button3D from "@/components/ui/Button3D";
+import clsx from "clsx";
 
 interface LessonHeaderProps {
   progressPercentage: number;
   hearts: number;
+  heartLostTrigger?: boolean;
   onQuit: () => void;
 }
 
 export default function LessonHeader({
   progressPercentage,
   hearts,
+  heartLostTrigger = false,
   onQuit,
 }: LessonHeaderProps) {
   const router = useRouter();
@@ -49,9 +52,19 @@ export default function LessonHeader({
           </div>
         </div>
 
-        {/* Hearts Counter */}
-        <div className="flex items-center gap-1.5 font-extrabold text-cardinal">
-          <Heart className="w-6 h-6 fill-cardinal stroke-cardinal drop-shadow-sm animate-pulse" />
+        {/* Hearts Counter with Animated Loss Trigger */}
+        <div
+          className={clsx(
+            "flex items-center gap-1.5 font-extrabold text-cardinal transition-transform",
+            heartLostTrigger ? "animate-heart-loss text-red-500" : ""
+          )}
+        >
+          <Heart
+            className={clsx(
+              "w-6 h-6 fill-cardinal stroke-cardinal drop-shadow-sm transition-transform",
+              heartLostTrigger ? "scale-125 stroke-red-600 fill-red-600" : "animate-pulse"
+            )}
+          />
           <span className="text-xl font-extrabold">{hearts}</span>
         </div>
       </header>

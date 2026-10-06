@@ -5,6 +5,12 @@ import { StrippedExercise } from "@/types";
 import { Volume2 } from "lucide-react";
 import clsx from "clsx";
 
+interface PlacedTile {
+  id: string;
+  text: string;
+  originalIndex: number;
+}
+
 interface TranslateProps {
   exercise: StrippedExercise;
   selectedWords: string[];
@@ -34,17 +40,28 @@ export default function TranslateExercise({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [disabled, onRemoveLastWord]);
 
-  // Compute available bank words by subtracting occurrences in selectedWords
+  // Audio helper
+  const playSourceAudio = () => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(exercise.source_text);
+      utterance.lang = "es-ES";
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Compute placed tiles mapping based on selectedWords
   const bankWords = exercise.options.map((opt) => opt.text);
-  const usedCounts: Record<string, number> = {};
+  const usedCountMap: Record<string, number> = {};
   selectedWords.forEach((w) => {
-    usedCounts[w] = (usedCounts[w] || 0) + 1;
+    usedCountMap[w] = (usedCountMap[w] || 0) + 1;
   });
 
-  const availableBankIndices = bankWords.map((word, idx) => {
-    const countBefore = bankWords.slice(0, idx + 1).filter((w) => w === word).length;
-    const isUsed = countBefore <= (usedCounts[word] || 0);
-    return { word, isUsed, idx };
+  const bankSlots = bankWords.map((word, idx) => {
+    const occurrencesBefore = bankWords.slice(0, idx + 1).filter((w) => w === word).length;
+    const isPlaced = occurrencesBefore <= (usedCountMap[word] || 0);
+    return { word, isPlaced, originalIndex: idx };
   });
 
   return (
@@ -55,7 +72,9 @@ export default function TranslateExercise({
         <div className="relative bg-polar border-2 border-swan rounded-2xl p-4 sm:p-5 flex items-center gap-3 shadow-sm">
           <button
             type="button"
-            className="p-2 rounded-xl bg-selectedCardBg text-macaw hover:brightness-105 active:scale-95 transition"
+            onClick={playSourceAudio}
+            className="p-2 rounded-xl bg-selectedCardBg text-macaw hover:brightness-105 active:scale-95 transition cursor-pointer"
+            title="Listen to audio"
           >
             <Volume2 className="w-5 h-5 fill-macaw stroke-macaw" />
           </button>
@@ -66,17 +85,24 @@ export default function TranslateExercise({
       </div>
 
       {/* Target Answer Line / Slots */}
-      <div className="min-h-[72px] border-b-2 border-swan pb-3 flex flex-wrap gap-2 items-center">
+      <div className="min-h-[76px] border-b-2 border-swan pb-3 flex flex-wrap gap-2.5 items-center">
         {selectedWords.length === 0 ? (
-          <span className="text-wolf text-sm font-bold pl-2 italic">Tap words below to build your answer...</span>
+          <span className="text-wolf text-sm font-bold pl-2 italic">
+            Tap words below or press Backspace to edit...
+          </span>
         ) : (
           selectedWords.map((word, idx) => (
             <button
-              key={`${word}-${idx}`}
+              key={`placed-${word}-${idx}`}
               type="button"
               disabled={disabled}
               onClick={() => onRemoveWord(idx)}
-              className="bg-snow text-eel font-extrabold text-base px-4 py-2.5 rounded-xl border-2 border-swan border-b-4 hover:bg-polar active:translate-y-[2px] active:border-b-2 transition shadow-sm animate-in zoom-in-95 duration-100"
+              className={clsx(
+                "bg-snow text-eel border-2 border-swan border-b-4 font-extrabold text-base px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75 animate-in zoom-in-95",
+                disabled
+                  ? "cursor-default opacity-80"
+                  : "hover:bg-polar active:translate-y-1 active:border-b-2 cursor-pointer"
+              )}
             >
               {word}
             </button>
@@ -84,25 +110,28 @@ export default function TranslateExercise({
         )}
       </div>
 
-      {/* Word Bank */}
-      <div className="flex flex-wrap gap-2.5 justify-center pt-2">
-        {availableBankIndices.map(({ word, isUsed, idx }) => (
-          <div key={`bank-${idx}`} className="relative">
-            {/* Disabled ghost tile placeholder */}
-            {isUsed && (
-              <div className="bg-swan/50 text-transparent font-extrabold text-base px-4 py-2.5 rounded-xl border-2 border-dashed border-hare/40 select-none pointer-events-none">
+      {/* Word Bank with Recessed Placeholder Slots */}
+      <div className="flex flex-wrap gap-3 justify-center pt-2 min-h-[110px]">
+        {bankSlots.map(({ word, isPlaced, originalIndex }) => (
+          <div key={`bank-${word}-${originalIndex}`} className="relative">
+            {/* Recessed placeholder slot left in the bank */}
+            {isPlaced && (
+              <div className="border-2 border-dashed border-swan bg-polar/50 rounded-xl h-[46px] px-4 py-2.5 flex items-center justify-center font-extrabold text-base text-transparent select-none pointer-events-none shadow-inner">
                 {word}
               </div>
             )}
 
-            {!isUsed && (
+            {/* Active 3D Word Tile */}
+            {!isPlaced && (
               <button
                 type="button"
                 disabled={disabled}
                 onClick={() => onAddWord(word)}
                 className={clsx(
-                  "bg-snow text-eel font-extrabold text-base px-4 py-2.5 rounded-xl border-2 border-swan border-b-4 hover:bg-polar active:translate-y-[2px] active:border-b-2 transition shadow-sm",
-                  disabled ? "cursor-default" : "cursor-pointer"
+                  "bg-snow text-eel border-2 border-swan border-b-4 font-extrabold text-base px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75",
+                  disabled
+                    ? "cursor-default opacity-80"
+                    : "hover:bg-polar active:translate-y-1 active:border-b-2 cursor-pointer"
                 )}
               >
                 {word}

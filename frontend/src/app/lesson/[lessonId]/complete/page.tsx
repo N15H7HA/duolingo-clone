@@ -1,52 +1,64 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams, useParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import confetti from "canvas-confetti";
-import { Zap, Target, Clock, Flame, Sparkles, CheckCircle, ChevronRight } from "lucide-react";
+import { Zap, Target, Clock, Flame, Sparkles } from "lucide-react";
 import Button3D from "@/components/ui/Button3D";
 
 export default function LessonCompletePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const params = useParams();
   const queryClient = useQueryClient();
 
-  const xpEarned = searchParams.get("xp") ? parseInt(searchParams.get("xp")!, 10) : 17;
-  const accuracy = searchParams.get("accuracy") ? parseInt(searchParams.get("accuracy")!, 10) : 100;
-  const timeSeconds = searchParams.get("time") ? parseInt(searchParams.get("time")!, 10) : 85;
+  const targetXp = searchParams.get("xp") ? parseInt(searchParams.get("xp")!, 10) : 15;
+  const targetAccuracy = searchParams.get("accuracy") ? parseInt(searchParams.get("accuracy")!, 10) : 100;
+  const timeSeconds = searchParams.get("time") ? parseInt(searchParams.get("time")!, 10) : 60;
   const streak = searchParams.get("streak") ? parseInt(searchParams.get("streak")!, 10) : 3;
   const title = searchParams.get("title") || "Spanish Lesson";
+
+  // Animated count-up states
+  const [displayedXp, setDisplayedXp] = useState(0);
+  const [displayedAccuracy, setDisplayedAccuracy] = useState(0);
 
   // Format time as M:SS
   const minutes = Math.floor(timeSeconds / 60);
   const seconds = timeSeconds % 60;
   const formattedTime = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 
-  // Launch 2-second confetti burst on mount
+  // Multi-burst celebration confetti + Animated numbers
   useEffect(() => {
-    // Invalidate queries so that path, user profile, and leaderboard are fresh
+    // 1. Invalidate queries so that path, user profile, and leaderboard reflect fresh state
     queryClient.invalidateQueries({ queryKey: ["user-me"] });
     queryClient.invalidateQueries({ queryKey: ["learning-path"] });
     queryClient.invalidateQueries({ queryKey: ["league-leaderboard"] });
 
-    const duration = 2 * 1000;
+    // 2. Center firework burst immediately
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ["#58CC02", "#1CB0F6", "#FFC800", "#FF4B4B", "#CE82FF"],
+    });
+
+    // 3. Side cannons for 2.5 seconds
+    const duration = 2.5 * 1000;
     const end = Date.now() + duration;
 
     const frame = () => {
       confetti({
-        particleCount: 3,
+        particleCount: 4,
         angle: 60,
         spread: 55,
-        origin: { x: 0 },
+        origin: { x: 0, y: 0.7 },
         colors: ["#58CC02", "#1CB0F6", "#FFC800", "#FF4B4B", "#CE82FF"],
       });
       confetti({
-        particleCount: 3,
+        particleCount: 4,
         angle: 120,
         spread: 55,
-        origin: { x: 1 },
+        origin: { x: 1, y: 0.7 },
         colors: ["#58CC02", "#1CB0F6", "#FFC800", "#FF4B4B", "#CE82FF"],
       });
 
@@ -55,7 +67,39 @@ export default function LessonCompletePage() {
       }
     };
     frame();
-  }, [queryClient]);
+
+    // 4. Smooth animated number count-ups
+    const xpSteps = 20;
+    const xpInterval = 50;
+    let currentXpStep = 0;
+
+    const xpTimer = setInterval(() => {
+      currentXpStep++;
+      const current = Math.min(targetXp, Math.round((currentXpStep / xpSteps) * targetXp));
+      setDisplayedXp(current);
+      if (currentXpStep >= xpSteps) {
+        clearInterval(xpTimer);
+      }
+    }, xpInterval);
+
+    const accSteps = 20;
+    const accInterval = 50;
+    let currentAccStep = 0;
+
+    const accTimer = setInterval(() => {
+      currentAccStep++;
+      const current = Math.min(targetAccuracy, Math.round((currentAccStep / accSteps) * targetAccuracy));
+      setDisplayedAccuracy(current);
+      if (currentAccStep >= accSteps) {
+        clearInterval(accTimer);
+      }
+    }, accInterval);
+
+    return () => {
+      clearInterval(xpTimer);
+      clearInterval(accTimer);
+    };
+  }, [queryClient, targetXp, targetAccuracy]);
 
   const handleContinue = () => {
     router.push("/learn");
@@ -79,11 +123,11 @@ export default function LessonCompletePage() {
             Lesson Complete!
           </h1>
           <p className="text-wolf font-extrabold text-sm sm:text-base">
-            You practiced <span className="text-eel font-black">{title}</span>
+            You mastered <span className="text-eel font-black">{title}</span>
           </p>
         </div>
 
-        {/* 3 Three-Dimensional Stat Cards */}
+        {/* 3 Three-Dimensional Stat Cards with Animated Count-Ups */}
         <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full">
           {/* Card 1: TOTAL XP */}
           <div className="bg-snow rounded-3xl p-4 sm:p-5 border-2 border-b-[6px] border-bee text-center space-y-2 shadow-sm transition-transform hover:-translate-y-1">
@@ -92,25 +136,27 @@ export default function LessonCompletePage() {
             </p>
             <div className="flex items-center justify-center gap-1">
               <Zap className="w-5 h-5 text-bee fill-bee" />
-              <span className="text-2xl sm:text-3xl font-black text-bee">+{xpEarned}</span>
+              <span className="text-2xl sm:text-3xl font-black text-bee">+{displayedXp}</span>
             </div>
           </div>
 
           {/* Card 2: AMAZING ACCURACY */}
           <div className="bg-snow rounded-3xl p-4 sm:p-5 border-2 border-b-[6px] border-featherGreen text-center space-y-2 shadow-sm transition-transform hover:-translate-y-1">
             <p className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-featherGreen">
-              Amazing
+              Accuracy
             </p>
             <div className="flex items-center justify-center gap-1">
               <Target className="w-5 h-5 text-featherGreen stroke-[3]" />
-              <span className="text-2xl sm:text-3xl font-black text-featherGreen">{accuracy}%</span>
+              <span className="text-2xl sm:text-3xl font-black text-featherGreen">
+                {displayedAccuracy}%
+              </span>
             </div>
           </div>
 
           {/* Card 3: COMMITTED TIME */}
           <div className="bg-snow rounded-3xl p-4 sm:p-5 border-2 border-b-[6px] border-macaw text-center space-y-2 shadow-sm transition-transform hover:-translate-y-1">
             <p className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-macaw">
-              Committed
+              Speed
             </p>
             <div className="flex items-center justify-center gap-1">
               <Clock className="w-5 h-5 text-macaw stroke-[3]" />
