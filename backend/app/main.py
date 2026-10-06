@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
@@ -32,16 +33,25 @@ app = FastAPI(
     redoc_url="/api/v1/redoc",
 )
 
-# CORS configuration for local development and production frontends
+# CORS configuration for local development and production frontends (e.g. Vercel)
+raw_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+frontend_env = os.getenv("FRONTEND_URL")
+if frontend_env:
+    raw_origins.append(frontend_env)
+
+# Strip trailing slashes and deduplicate
+allowed_origins = list(dict.fromkeys(o.strip().rstrip("/") for o in raw_origins if o and o.strip()))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-    ],
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
