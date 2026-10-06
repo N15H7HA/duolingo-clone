@@ -190,7 +190,7 @@ def seed_unit1_basics(db: Session, unit: Unit) -> list[Skill]:
         "Type 'Goodbye' in Spanish",
         "Goodbye", "waving_man",
         [],
-        ["adiós", "adios", "Adios", "Adiós"]
+        ["adiós", "Adiós"]
     )
     # Ex 6: Select
     create_exercise(
