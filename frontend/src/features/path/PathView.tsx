@@ -13,10 +13,10 @@ export default function PathView() {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center p-12 space-y-8 max-w-[592px] mx-auto">
-        <div className="w-full h-28 bg-[#E5E5E5]/60 rounded-2xl animate-pulse" />
-        <div className="w-20 h-20 bg-[#E5E5E5]/60 rounded-full animate-pulse my-4" />
-        <div className="w-20 h-20 bg-[#E5E5E5]/60 rounded-full animate-pulse my-4 translate-x-11" />
-        <div className="w-20 h-20 bg-[#E5E5E5]/60 rounded-full animate-pulse my-4 translate-x-18" />
+        <div className="w-full h-28 bg-swan/60 rounded-2xl animate-pulse" />
+        <div className="w-20 h-20 bg-swan/60 rounded-full animate-pulse my-4" />
+        <div className="w-20 h-20 bg-swan/60 rounded-full animate-pulse my-4 translate-x-11" />
+        <div className="w-20 h-20 bg-swan/60 rounded-full animate-pulse my-4 translate-x-18" />
       </div>
     );
   }
@@ -24,8 +24,8 @@ export default function PathView() {
   if (error || !pathData) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center max-w-[592px] mx-auto">
-        <p className="text-[#FF4B4B] font-black text-lg mb-2">Failed to load learning path</p>
-        <p className="text-[#777777] text-sm">Please ensure the backend server is running on http://localhost:8000</p>
+        <p className="text-cardinal font-black text-lg mb-2">Failed to load learning path</p>
+        <p className="text-wolf text-sm font-bold">Please ensure the backend server is running on http://localhost:8000</p>
       </div>
     );
   }

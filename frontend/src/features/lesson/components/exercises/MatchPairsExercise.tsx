@@ -66,7 +66,7 @@ export default function MatchPairsExercise({
               return (
                 <div
                   key={opt.id}
-                  className="p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center bg-[#D7FFB8]/40 text-[#58A700]/50 border-2 border-dashed border-[#58A700]/30 pointer-events-none select-none"
+                  className="p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center bg-feedbackGreenBg/40 text-featherGreen/70 border-2 border-dashed border-featherGreen/30 pointer-events-none select-none"
                 >
                   {opt.text}
                 </div>
@@ -83,9 +83,9 @@ export default function MatchPairsExercise({
                   "w-full p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center border-2 border-b-4 transition-all duration-75",
                   isSelected
                     ? mismatched
-                      ? "bg-[#FFDFE0] border-[#FF4B4B] border-b-[#EA2B2B] text-[#FF4B4B] animate-shake"
-                      : "bg-[#DDF4FF] border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
-                    : "bg-white border-[#E5E5E5] border-b-[#CCCCCC] hover:bg-[#F7F7F7] text-[#4B4B4B] active:translate-y-[2px] active:border-b-2"
+                      ? "bg-feedbackRedBg border-cardinal border-b-cardinalShadow text-cardinal animate-shake"
+                      : "bg-selectedCardBg border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
+                    : "bg-snow border-swan border-b-swan/80 hover:bg-polar text-eel active:translate-y-[2px] active:border-b-2"
                 )}
               >
                 {opt.text}
@@ -104,7 +104,7 @@ export default function MatchPairsExercise({
               return (
                 <div
                   key={opt.id}
-                  className="p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center bg-[#D7FFB8]/40 text-[#58A700]/50 border-2 border-dashed border-[#58A700]/30 pointer-events-none select-none"
+                  className="p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center bg-feedbackGreenBg/40 text-featherGreen/70 border-2 border-dashed border-featherGreen/30 pointer-events-none select-none"
                 >
                   {opt.text}
                 </div>
@@ -121,9 +121,9 @@ export default function MatchPairsExercise({
                   "w-full p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center border-2 border-b-4 transition-all duration-75",
                   isSelected
                     ? mismatched
-                      ? "bg-[#FFDFE0] border-[#FF4B4B] border-b-[#EA2B2B] text-[#FF4B4B] animate-shake"
-                      : "bg-[#DDF4FF] border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
-                    : "bg-white border-[#E5E5E5] border-b-[#CCCCCC] hover:bg-[#F7F7F7] text-[#4B4B4B] active:translate-y-[2px] active:border-b-2"
+                      ? "bg-feedbackRedBg border-cardinal border-b-cardinalShadow text-cardinal animate-shake"
+                      : "bg-selectedCardBg border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
+                    : "bg-snow border-swan border-b-swan/80 hover:bg-polar text-eel active:translate-y-[2px] active:border-b-2"
                 )}
               >
                 {opt.text}

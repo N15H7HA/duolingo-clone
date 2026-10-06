@@ -32,14 +32,14 @@ export default function LessonHeader({
         <button
           type="button"
           onClick={() => setShowQuitModal(true)}
-          className="text-[#777777] hover:text-[#4B4B4B] p-2 rounded-xl hover:bg-[#F7F7F7] transition cursor-pointer"
+          className="text-wolf hover:text-eel p-2 rounded-xl hover:bg-polar transition cursor-pointer"
           title="Quit Lesson"
         >
           <X className="w-6 h-6 stroke-[3]" />
         </button>
 
         {/* Thick Rounded Progress Bar */}
-        <div className="h-4 bg-[#E5E5E5] rounded-full overflow-hidden flex-1 mx-4 sm:mx-6 relative shadow-inner">
+        <div className="h-4 bg-swan rounded-full overflow-hidden flex-1 mx-4 sm:mx-6 relative shadow-inner">
           <div
             className="bg-[#58CC02] h-full rounded-full transition-all duration-500 ease-out relative"
             style={{ width: `${Math.max(5, Math.min(100, progressPercentage))}%` }}
@@ -50,21 +50,21 @@ export default function LessonHeader({
         </div>
 
         {/* Hearts Counter */}
-        <div className="flex items-center gap-1.5 font-extrabold text-[#FF4B4B]">
-          <Heart className="w-6 h-6 fill-[#FF4B4B] stroke-[#FF4B4B] drop-shadow-sm animate-pulse" />
+        <div className="flex items-center gap-1.5 font-extrabold text-cardinal">
+          <Heart className="w-6 h-6 fill-cardinal stroke-cardinal drop-shadow-sm animate-pulse" />
           <span className="text-xl font-extrabold">{hearts}</span>
         </div>
       </header>
 
       {/* Quit Confirmation Modal */}
       {showQuitModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#4B4B4B]/60 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full border-2 border-[#E5E5E5] shadow-2xl text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-[#FFDFE0] mx-auto flex items-center justify-center text-3xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+          <div className="bg-snow rounded-3xl p-6 sm:p-8 max-w-sm w-full border-2 border-swan shadow-2xl text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-feedbackRedBg mx-auto flex items-center justify-center text-3xl">
               🥺
             </div>
-            <h3 className="text-2xl font-black text-[#4B4B4B]">Quit lesson?</h3>
-            <p className="text-sm font-bold text-[#777777]">
+            <h3 className="text-2xl font-black text-eel">Quit lesson?</h3>
+            <p className="text-sm font-bold text-wolf">
               All progress in this session will be lost.
             </p>
             <div className="space-y-2.5 pt-2">

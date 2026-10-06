@@ -54,10 +54,10 @@ export default function FeedbackDrawer({
         className={clsx(
           "fixed bottom-0 left-0 right-0 z-50 transition-all duration-200 ease-out border-t-2 select-none py-6 px-4 sm:px-8",
           status === "correct"
-            ? "bg-[#D7FFB8] border-[#58A700]"
+            ? "bg-feedbackGreenBg border-[#58A700]"
             : status === "incorrect"
-            ? "bg-[#FFDFE0] border-[#EA2B2B]"
-            : "bg-white border-[#E5E5E5]"
+            ? "bg-feedbackRedBg border-[#EA2B2B]"
+            : "bg-snow border-swan"
         )}
       >
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -68,11 +68,11 @@ export default function FeedbackDrawer({
                 <Check className="w-7 h-7 stroke-[3.5]" />
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-extrabold text-[#58A700]">
+                <h3 className="text-xl sm:text-2xl font-extrabold text-[#58A700] dark:text-[#89E219]">
                   {feedback?.accent_warning ? "Nicely done! (Pay attention to accents)" : "Nicely done!"}
                 </h3>
                 {feedback?.accent_warning && (
-                  <p className="text-xs sm:text-sm font-bold text-[#58A700]">
+                  <p className="text-xs sm:text-sm font-bold text-[#58A700] dark:text-[#89E219]">
                     Accented solution: <span className="font-extrabold underline">{feedback.solution}</span>
                   </p>
                 )}
@@ -86,10 +86,10 @@ export default function FeedbackDrawer({
                 <X className="w-7 h-7 stroke-[3.5]" />
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-extrabold text-[#EA2B2B]">
+                <h3 className="text-lg sm:text-xl font-extrabold text-[#EA2B2B] dark:text-[#FF4B4B]">
                   Correct solution:
                 </h3>
-                <p className="text-base sm:text-lg font-extrabold text-[#EA2B2B]">
+                <p className="text-base sm:text-lg font-extrabold text-[#EA2B2B] dark:text-[#FFDFE0]">
                   {feedback?.solution || "Check answer"}
                 </p>
               </div>
@@ -139,13 +139,13 @@ export default function FeedbackDrawer({
 
       {/* Out of Hearts Modal */}
       {status === "out_of_hearts" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#4B4B4B]/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full border-2 border-[#E5E5E5] shadow-2xl text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-[#FFDFE0] mx-auto flex items-center justify-center text-3xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-snow rounded-3xl p-6 sm:p-8 max-w-sm w-full border-2 border-swan shadow-2xl text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-feedbackRedBg mx-auto flex items-center justify-center text-3xl">
               💔
             </div>
-            <h3 className="text-2xl font-black text-[#4B4B4B]">Out of Hearts!</h3>
-            <p className="text-sm font-bold text-[#777777]">
+            <h3 className="text-2xl font-black text-eel">Out of Hearts!</h3>
+            <p className="text-sm font-bold text-wolf">
               You ran out of hearts in this session. Practice to earn hearts back or refill with gems.
             </p>
             <div className="space-y-2.5 pt-2">

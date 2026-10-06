@@ -1,36 +1,61 @@
 @import "tailwindcss";
 
-@theme {
-  --color-featherGreen: #58CC02;
-  --color-featherGreenShadow: #58A700;
-  --color-maskGreen: #89E219;
-  --color-feedbackGreenBg: #D7FFB8;
-  --color-cardinal: #FF4B4B;
-  --color-cardinalShadow: #EA2B2B;
-  --color-feedbackRedBg: #FFDFE0;
-  --color-macaw: #1CB0F6;
-  --color-macawShadow: #1899D6;
-  --color-selectedCardBg: #DDF4FF;
-  --color-bee: #FFC800;
-  --color-fox: #FF9600;
-  --color-beetle: #CE82FF;
-  --color-eel: #4B4B4B;
-  --color-wolf: #777777;
-  --color-hare: #AFAFAF;
-  --color-swan: #E5E5E5;
-  --color-polar: #F7F7F7;
-  --color-snow: #FFFFFF;
-  --font-nunito: var(--font-nunito), "Nunito", sans-serif;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  --color-snow-val: #FFFFFF;
+  --color-polar-val: #F7F7F7;
+  --color-swan-val: #E5E5E5;
+  --color-eel-val: #4B4B4B;
+  --color-wolf-val: #777777;
+  --color-hare-val: #AFAFAF;
+  --color-selectedCardBg-val: #DDF4FF;
+  --color-feedbackGreenBg-val: #D7FFB8;
+  --color-feedbackRedBg-val: #FFDFE0;
   --background: #FFFFFF;
   --foreground: #4B4B4B;
 }
 
+.dark, [data-theme="dark"] {
+  --color-snow-val: #131F24;
+  --color-polar-val: #18272F;
+  --color-swan-val: #283C45;
+  --color-eel-val: #F7F7F7;
+  --color-wolf-val: #8899A6;
+  --color-hare-val: #5F737E;
+  --color-selectedCardBg-val: #1C3B4E;
+  --color-feedbackGreenBg-val: #1A3D22;
+  --color-feedbackRedBg-val: #3E1D22;
+  --background: #131F24;
+  --foreground: #F7F7F7;
+}
+
+@theme {
+  --color-featherGreen: #58CC02;
+  --color-featherGreenShadow: #58A700;
+  --color-maskGreen: #89E219;
+  --color-feedbackGreenBg: var(--color-feedbackGreenBg-val);
+  --color-cardinal: #FF4B4B;
+  --color-cardinalShadow: #EA2B2B;
+  --color-feedbackRedBg: var(--color-feedbackRedBg-val);
+  --color-macaw: #1CB0F6;
+  --color-macawShadow: #1899D6;
+  --color-selectedCardBg: var(--color-selectedCardBg-val);
+  --color-bee: #FFC800;
+  --color-fox: #FF9600;
+  --color-beetle: #CE82FF;
+  --color-eel: var(--color-eel-val);
+  --color-wolf: var(--color-wolf-val);
+  --color-hare: var(--color-hare-val);
+  --color-swan: var(--color-swan-val);
+  --color-polar: var(--color-polar-val);
+  --color-snow: var(--color-snow-val);
+  --font-nunito: var(--font-nunito), "Nunito", sans-serif;
+}
+
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--color-snow-val);
+  color: var(--color-eel-val);
   font-family: var(--font-nunito), "Nunito", sans-serif;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -63,4 +88,11 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #AFAFAF;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #283C45;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3B525D;
 }

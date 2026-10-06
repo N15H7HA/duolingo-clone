@@ -27,9 +27,9 @@ export default function TypeAnswerExercise({
   return (
     <div className="space-y-6 max-w-xl mx-auto w-full select-none">
       {/* Source Prompt Card */}
-      <div className="flex items-center gap-3 p-4 sm:p-5 bg-[#F7F7F7] rounded-2xl border-2 border-[#E5E5E5] w-fit shadow-sm">
-        <Volume2 className="w-5 h-5 text-[#1CB0F6] cursor-pointer" />
-        <span className="text-lg sm:text-xl font-black text-[#4B4B4B]">{exercise.source_text}</span>
+      <div className="flex items-center gap-3 p-4 sm:p-5 bg-polar rounded-2xl border-2 border-swan w-fit shadow-sm">
+        <Volume2 className="w-5 h-5 text-macaw cursor-pointer" />
+        <span className="text-lg sm:text-xl font-black text-eel">{exercise.source_text}</span>
       </div>
 
       {/* Input Area */}
@@ -40,7 +40,7 @@ export default function TypeAnswerExercise({
           onChange={(e) => onChange(e.target.value)}
           placeholder="Type your translation in Spanish..."
           rows={3}
-          className="w-full p-4 sm:p-5 rounded-2xl border-2 border-b-4 border-[#E5E5E5] bg-white text-[#4B4B4B] font-extrabold text-lg focus:outline-none focus:border-[#1CB0F6] focus:border-b-[#1899D6] transition shadow-inner resize-none"
+          className="w-full p-4 sm:p-5 rounded-2xl border-2 border-b-4 border-swan bg-snow text-eel font-extrabold text-lg focus:outline-none focus:border-[#1CB0F6] focus:border-b-[#1899D6] transition shadow-inner resize-none"
         />
 
         {/* Special Character Virtual Helpers */}
@@ -51,7 +51,7 @@ export default function TypeAnswerExercise({
               type="button"
               disabled={disabled}
               onClick={() => insertChar(char)}
-              className="w-10 h-10 rounded-xl bg-white border-2 border-b-4 border-[#E5E5E5] text-[#4B4B4B] font-black text-base hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 transition shadow-sm"
+              className="w-10 h-10 rounded-xl bg-snow border-2 border-b-4 border-swan text-eel font-black text-base hover:bg-polar active:translate-y-[2px] active:border-b-2 transition shadow-sm"
             >
               {char}
             </button>

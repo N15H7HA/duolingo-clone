@@ -40,9 +40,9 @@ export default function SettingsPage() {
           </div>
 
           {/* Daily Goal Settings */}
-          <section className="bg-white rounded-3xl p-6 border-2 border-swan shadow-sm space-y-4">
+          <section className="bg-snow rounded-3xl p-6 border-2 border-swan shadow-sm space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-2xl bg-[#DDF4FF] text-[#1CB0F6]">
+              <div className="p-2.5 rounded-2xl bg-selectedCardBg text-macaw">
                 <Target className="w-6 h-6" />
               </div>
               <div>
@@ -61,8 +61,8 @@ export default function SettingsPage() {
                     onClick={() => updateSettings.mutate({ daily_goal_xp: g })}
                     className={`py-3 px-4 rounded-2xl font-extrabold text-sm border-2 border-b-4 transition-all duration-75 ${
                       isSelected
-                        ? "bg-[#DDF4FF] border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
-                        : "bg-white border-swan hover:bg-polar text-eel active:translate-y-[2px] active:border-b-2"
+                        ? "bg-selectedCardBg border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
+                        : "bg-snow border-swan hover:bg-polar text-eel active:translate-y-[2px] active:border-b-2"
                     }`}
                   >
                     {g} XP / day
@@ -73,7 +73,7 @@ export default function SettingsPage() {
           </section>
 
           {/* Sound & Appearance Toggles */}
-          <section className="bg-white rounded-3xl p-6 border-2 border-swan shadow-sm space-y-4">
+          <section className="bg-snow rounded-3xl p-6 border-2 border-swan shadow-sm space-y-4">
             <h3 className="text-lg font-black text-eel">Preferences</h3>
 
             <div className="flex items-center justify-between py-3 border-b border-swan/60">
@@ -97,7 +97,7 @@ export default function SettingsPage() {
                 }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full bg-white transition-transform ${
+                  className={`w-6 h-6 rounded-full bg-snow shadow-sm transition-transform ${
                     user.sound_enabled ? "translate-x-6" : "translate-x-0"
                   }`}
                 />
@@ -125,7 +125,7 @@ export default function SettingsPage() {
                 }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full bg-white transition-transform ${
+                  className={`w-6 h-6 rounded-full bg-snow shadow-sm transition-transform ${
                     user.dark_mode ? "translate-x-6" : "translate-x-0"
                   }`}
                 />
@@ -168,7 +168,7 @@ export default function SettingsPage() {
           </section>
 
           {/* Placeholders */}
-          <section className="bg-white rounded-3xl p-6 border-2 border-swan shadow-sm space-y-3">
+          <section className="bg-snow rounded-3xl p-6 border-2 border-swan shadow-sm space-y-3">
             <h3 className="text-lg font-black text-eel">Account & Help</h3>
             <div className="space-y-2 text-sm font-bold text-wolf">
               <div className="flex items-center gap-3 py-2 border-b border-swan/40 hover:text-eel cursor-pointer">

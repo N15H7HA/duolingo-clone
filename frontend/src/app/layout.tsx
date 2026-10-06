@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 import DevDrawer from "@/components/dev/DevDrawer";
+import ThemeProvider from "@/providers/ThemeProvider";
 
 export default function RootLayout({
   children,
@@ -23,11 +24,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={nunito.variable}>
-      <body className="font-nunito bg-snow text-eel min-h-screen antialiased selection:bg-selectedCardBg">
+    <html lang="en" className={nunito.variable} suppressHydrationWarning>
+      <body className="font-nunito bg-snow text-eel min-h-screen antialiased selection:bg-selectedCardBg transition-colors duration-150">
         <QueryProvider>
-          {children}
-          <DevDrawer />
+          <ThemeProvider>
+            {children}
+            <DevDrawer />
+          </ThemeProvider>
         </QueryProvider>
       </body>
     </html>

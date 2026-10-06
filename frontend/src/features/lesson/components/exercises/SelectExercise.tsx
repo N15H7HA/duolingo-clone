@@ -47,8 +47,8 @@ export default function SelectExercise({
                 "relative flex items-center justify-between p-5 rounded-2xl font-extrabold text-base sm:text-lg text-left border-2 border-b-4 transition-all duration-75",
                 disabled ? "cursor-default" : "cursor-pointer active:translate-y-[2px] active:border-b-2",
                 isSelected
-                  ? "bg-[#DDF4FF] border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6] shadow-sm"
-                  : "bg-white border-[#E5E5E5] border-b-[#CCCCCC] hover:bg-[#F7F7F7] text-[#4B4B4B]"
+                  ? "bg-selectedCardBg border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6] shadow-sm"
+                  : "bg-snow border-swan border-b-swan/80 hover:bg-polar text-eel"
               )}
             >
               <div className="flex items-center gap-3">
@@ -75,8 +75,8 @@ export default function SelectExercise({
                 className={clsx(
                   "text-xs font-black px-2.5 py-1 rounded-lg border",
                   isSelected
-                    ? "border-[#1CB0F6] text-[#1CB0F6] bg-white"
-                    : "border-[#E5E5E5] text-[#777777] bg-[#F7F7F7]"
+                    ? "border-[#1CB0F6] text-[#1CB0F6] bg-snow"
+                    : "border-swan text-wolf bg-polar"
                 )}
               >
                 {badgeNum}

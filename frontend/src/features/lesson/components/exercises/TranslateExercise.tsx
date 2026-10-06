@@ -52,23 +52,23 @@ export default function TranslateExercise({
       {/* Speech Bubble with Source Text */}
       <div className="flex items-start gap-3">
         <div className="text-4xl filter drop-shadow">🦉</div>
-        <div className="relative bg-[#F7F7F7] border-2 border-[#E5E5E5] rounded-2xl p-4 sm:p-5 flex items-center gap-3 shadow-sm">
+        <div className="relative bg-polar border-2 border-swan rounded-2xl p-4 sm:p-5 flex items-center gap-3 shadow-sm">
           <button
             type="button"
-            className="p-2 rounded-xl bg-[#DDF4FF] text-[#1CB0F6] hover:brightness-105 active:scale-95 transition"
+            className="p-2 rounded-xl bg-selectedCardBg text-macaw hover:brightness-105 active:scale-95 transition"
           >
-            <Volume2 className="w-5 h-5 fill-[#1CB0F6] stroke-[#1CB0F6]" />
+            <Volume2 className="w-5 h-5 fill-macaw stroke-macaw" />
           </button>
-          <span className="text-lg sm:text-xl font-black text-[#4B4B4B]">{exercise.source_text}</span>
+          <span className="text-lg sm:text-xl font-black text-eel">{exercise.source_text}</span>
           {/* Bubble tail */}
-          <div className="absolute -left-2 top-5 w-3 h-3 bg-[#F7F7F7] border-l-2 border-b-2 border-[#E5E5E5] transform rotate-45" />
+          <div className="absolute -left-2 top-5 w-3 h-3 bg-polar border-l-2 border-b-2 border-swan transform rotate-45" />
         </div>
       </div>
 
       {/* Target Answer Line / Slots */}
-      <div className="min-h-[72px] border-b-2 border-[#E5E5E5] pb-3 flex flex-wrap gap-2 items-center">
+      <div className="min-h-[72px] border-b-2 border-swan pb-3 flex flex-wrap gap-2 items-center">
         {selectedWords.length === 0 ? (
-          <span className="text-[#777777] text-sm font-bold pl-2 italic">Tap words below to build your answer...</span>
+          <span className="text-wolf text-sm font-bold pl-2 italic">Tap words below to build your answer...</span>
         ) : (
           selectedWords.map((word, idx) => (
             <button
@@ -76,7 +76,7 @@ export default function TranslateExercise({
               type="button"
               disabled={disabled}
               onClick={() => onRemoveWord(idx)}
-              className="bg-white text-[#4B4B4B] font-extrabold text-base px-4 py-2.5 rounded-xl border-2 border-[#E5E5E5] border-b-4 hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 transition shadow-sm animate-in zoom-in-95 duration-100"
+              className="bg-snow text-eel font-extrabold text-base px-4 py-2.5 rounded-xl border-2 border-swan border-b-4 hover:bg-polar active:translate-y-[2px] active:border-b-2 transition shadow-sm animate-in zoom-in-95 duration-100"
             >
               {word}
             </button>
@@ -90,7 +90,7 @@ export default function TranslateExercise({
           <div key={`bank-${idx}`} className="relative">
             {/* Disabled ghost tile placeholder */}
             {isUsed && (
-              <div className="bg-[#E5E5E5]/50 text-transparent font-extrabold text-base px-4 py-2.5 rounded-xl border-2 border-dashed border-[#CCCCCC] select-none pointer-events-none">
+              <div className="bg-swan/50 text-transparent font-extrabold text-base px-4 py-2.5 rounded-xl border-2 border-dashed border-hare/40 select-none pointer-events-none">
                 {word}
               </div>
             )}
@@ -101,7 +101,7 @@ export default function TranslateExercise({
                 disabled={disabled}
                 onClick={() => onAddWord(word)}
                 className={clsx(
-                  "bg-white text-[#4B4B4B] font-extrabold text-base px-4 py-2.5 rounded-xl border-2 border-[#E5E5E5] border-b-4 hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 transition shadow-sm",
+                  "bg-snow text-eel font-extrabold text-base px-4 py-2.5 rounded-xl border-2 border-swan border-b-4 hover:bg-polar active:translate-y-[2px] active:border-b-2 transition shadow-sm",
                   disabled ? "cursor-default" : "cursor-pointer"
                 )}
               >

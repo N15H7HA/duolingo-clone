@@ -39,9 +39,9 @@ export default function Button3D({
     gold:
       "bg-[#FFC800] text-white border-[#E5A500] hover:brightness-105 active:translate-y-[2px] active:border-b-2 cursor-pointer",
     white:
-      "bg-white text-[#4B4B4B] border-[#E5E5E5] hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 cursor-pointer",
+      "bg-snow text-eel border-swan hover:bg-polar active:translate-y-[2px] active:border-b-2 cursor-pointer",
     disabled:
-      "bg-[#E5E5E5] text-[#AFAFAF] border-[#CCCCCC] cursor-not-allowed active:translate-y-0 active:border-b-4",
+      "bg-swan text-hare border-hare/40 cursor-not-allowed active:translate-y-0 active:border-b-4",
   }[isActuallyDisabled ? "disabled" : variant];
 
   return (
