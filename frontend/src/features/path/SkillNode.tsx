@@ -44,66 +44,103 @@ export default function SkillNode({ skill, unitColor, horizontalOffset }: SkillN
 
   // Find next uncompleted lesson id or first lesson
   const currentLesson =
-    skill.lessons.find((l) => !l.is_completed) || skill.lessons[0] || { id: 1, position: 1, title: "Lesson 1" };
+    skill.lessons?.find((l) => !l.is_completed) ||
+    skill.lessons?.[0] ||
+    { id: 1, position: 1, title: "Lesson 1" };
 
   const isClickable = skill.status === "active" || skill.status === "completed";
 
   return (
     <div
-      className="relative flex flex-col items-center my-3 select-none"
+      className={clsx(
+        "relative flex flex-col items-center select-none transition-transform duration-300",
+        isPopoverOpen ? "z-40" : "z-10"
+      )}
       style={{ transform: `translateX(${horizontalOffset}px)` }}
     >
-      {/* Bouncing START Speech Bubble on Active Node */}
-      {skill.status === "active" && (
-        <div className="absolute -top-10 z-20 animate-bounce-subtle pointer-events-none">
-          <div className="bg-snow text-featherGreen px-3.5 py-1 rounded-xl font-black text-xs uppercase tracking-wider border-2 border-swan shadow-md flex items-center gap-1">
+      {/* Bouncing START Speech Bubble on Active Node (hidden when popover is open) */}
+      {skill.status === "active" && !isPopoverOpen && (
+        <div className="absolute -top-11 z-20 animate-bounce-subtle pointer-events-none">
+          <div className="bg-snow text-featherGreen px-3.5 py-1.5 rounded-xl font-black text-xs uppercase tracking-wider border-2 border-swan shadow-md flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 fill-featherGreen" />
             <span>Start</span>
           </div>
-          {/* Tooltip triangle */}
+          {/* Tooltip triangle pointer */}
           <div className="w-2.5 h-2.5 bg-snow border-r-2 border-b-2 border-swan transform rotate-45 mx-auto -mt-1.5" />
         </div>
       )}
 
-      {/* Main Circular Skill Button */}
-      <button
-        onClick={() => isClickable && setIsPopoverOpen(!isPopoverOpen)}
-        disabled={skill.status === "locked"}
-        style={{
-          backgroundColor:
-            skill.status === "completed"
-              ? "#FFC800"
-              : skill.status === "active"
-              ? unitColor
-              : "#E5E5E5",
-          borderColor:
-            skill.status === "completed"
-              ? "#E5B200"
-              : skill.status === "active"
-              ? "#46A302"
-              : "#CECECE",
-        }}
-        className={clsx(
-          "relative w-20 h-20 rounded-full flex items-center justify-center border-b-[6px] transition-transform active:translate-y-[3px] active:border-b-[3px] focus:outline-none shadow-sm",
-          isClickable ? "cursor-pointer hover:brightness-105" : "cursor-not-allowed opacity-90",
-          skill.status === "active" ? "ring-8 ring-featherGreen/20" : ""
+      {/* Main Circular Skill Button Wrapper with optional Progress Ring */}
+      <div className="relative flex items-center justify-center">
+        {/* Progress Ring for active node */}
+        {skill.status === "active" && (
+          <svg className="absolute -inset-2 w-24 h-24 -rotate-90 pointer-events-none">
+            <circle
+              cx="48"
+              cy="48"
+              r="44"
+              stroke="#E5E5E5"
+              strokeWidth="5"
+              fill="transparent"
+            />
+            <circle
+              cx="48"
+              cy="48"
+              r="44"
+              stroke="#FFC800"
+              strokeWidth="5"
+              fill="transparent"
+              strokeDasharray={2 * Math.PI * 44}
+              strokeDashoffset={2 * Math.PI * 44 * (1 - (skill.progress_ratio || 0))}
+              strokeLinecap="round"
+              className="transition-all duration-500 ease-out"
+            />
+          </svg>
         )}
-      >
-        {renderIcon()}
-      </button>
+
+        <button
+          onClick={() => isClickable && setIsPopoverOpen(!isPopoverOpen)}
+          disabled={skill.status === "locked"}
+          aria-label={`${skill.name} - ${skill.status}`}
+          style={{
+            backgroundColor:
+              skill.status === "completed"
+                ? "#FFC800"
+                : skill.status === "active"
+                ? unitColor
+                : "#E5E5E5",
+            borderColor:
+              skill.status === "completed"
+                ? "#E5B200"
+                : skill.status === "active"
+                ? "#46A302"
+                : "#CECECE",
+          }}
+          className={clsx(
+            "relative w-20 h-20 rounded-full flex items-center justify-center border-b-[6px] transition-all active:translate-y-[3px] active:border-b-[3px] focus:outline-none shadow-sm",
+            isClickable ? "cursor-pointer hover:brightness-105" : "cursor-not-allowed opacity-90",
+            skill.status === "active" ? "ring-4 ring-featherGreen/20" : ""
+          )}
+        >
+          {renderIcon()}
+        </button>
+      </div>
 
       {/* Floating Popover on Click */}
       {isPopoverOpen && (
         <>
-          {/* Overlay to close popover */}
+          {/* Transparent Backdrop to dismiss popover when clicking outside */}
           <div
             className="fixed inset-0 z-30"
             onClick={() => setIsPopoverOpen(false)}
           />
 
-          {/* Popover Card */}
-          <div className="absolute top-24 z-40 w-72 bg-snow rounded-3xl p-5 border-2 border-swan shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="text-left space-y-3">
+          {/* Popover Card anchored cleanly below the node */}
+          <div className="absolute top-[96px] z-40 w-72 sm:w-80 bg-snow rounded-3xl p-5 border-2 border-swan shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            {/* Top pointer arrow */}
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-snow border-t-2 border-l-2 border-swan transform rotate-45" />
+
+            <div className="relative text-left space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black uppercase text-wolf tracking-wider">
                   {skill.status === "completed" ? "Completed Skill" : "Active Skill"}
@@ -124,7 +161,7 @@ export default function SkillNode({ skill, unitColor, horizontalOffset }: SkillN
 
               <Link href={`/lesson/${currentLesson.id}`} className="block pt-1">
                 <Button3D variant="green" fullWidth size="md">
-                  {skill.status === "completed" ? "Practice +5 XP" : "Start +10 XP"}
+                  {skill.status === "completed" ? "PRACTICE +5 XP" : "START +10 XP"}
                 </Button3D>
               </Link>
             </div>

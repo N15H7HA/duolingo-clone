@@ -12,7 +12,7 @@ export default function PathView() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 space-y-6 max-w-xl mx-auto">
+      <div className="flex flex-col items-center justify-center p-12 space-y-8 max-w-xl mx-auto">
         <div className="w-full h-28 bg-swan/50 rounded-3xl animate-pulse" />
         <div className="w-20 h-20 bg-swan/50 rounded-full animate-pulse my-4" />
         <div className="w-20 h-20 bg-swan/50 rounded-full animate-pulse my-4 translate-x-10" />
@@ -34,10 +34,10 @@ export default function PathView() {
   let globalSkillIndex = 0;
 
   return (
-    <div className="flex flex-col items-center max-w-xl mx-auto px-4 pb-28 pt-2">
+    <div className="flex flex-col items-center max-w-xl mx-auto px-4 pb-36 pt-2">
       {pathData.units.map((unit) => {
         return (
-          <section key={unit.id} className="w-full flex flex-col items-center mb-10">
+          <section key={unit.id} className="w-full flex flex-col items-center mb-20">
             {/* Unit Title Banner */}
             <UnitHeader
               position={unit.position}
@@ -46,20 +46,24 @@ export default function PathView() {
               color={unit.color || "#58CC02"}
             />
 
-            {/* Path Skill Nodes with Sine-wave offset */}
-            <div className="flex flex-col items-center py-4 w-full">
+            {/* Path Skill Nodes with Sine-wave offset and generous vertical spacing */}
+            <div className="flex flex-col items-center w-full space-y-6 pt-4 pb-2">
               {unit.skills.map((skill) => {
                 const offsetIndex = globalSkillIndex % SINE_OFFSETS.length;
                 const offset = SINE_OFFSETS[offsetIndex];
                 globalSkillIndex += 1;
 
                 return (
-                  <SkillNode
+                  <div
                     key={skill.id}
-                    skill={skill}
-                    unitColor={unit.color || "#58CC02"}
-                    horizontalOffset={offset}
-                  />
+                    className="w-full flex justify-center py-2 relative"
+                  >
+                    <SkillNode
+                      skill={skill}
+                      unitColor={unit.color || "#58CC02"}
+                      horizontalOffset={offset}
+                    />
+                  </div>
                 );
               })}
             </div>
