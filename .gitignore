@@ -1,0 +1,22 @@
+backend/__pycache__/
+backend/*/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+backend/venv/
+backend/.env
+backend/duolingo.db
+backend/duolingo.db-wal
+backend/duolingo.db-shm
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env.*.local
+
+# OS / Editor
+.DS_Store
+*.swp
+.vscode/
+.idea/
