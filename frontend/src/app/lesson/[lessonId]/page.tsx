@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useLessonStore } from "@/features/lesson/store/useLessonStore";
 import LessonHeader from "@/features/lesson/components/LessonHeader";
 import FeedbackDrawer from "@/features/lesson/components/FeedbackDrawer";
-import LessonCelebration from "@/features/lesson/components/LessonCelebration";
 
 // Exercise Components
 import SelectExercise from "@/features/lesson/components/exercises/SelectExercise";
@@ -15,9 +14,11 @@ import MatchPairsExercise from "@/features/lesson/components/exercises/MatchPair
 import TypeAnswerExercise from "@/features/lesson/components/exercises/TypeAnswerExercise";
 
 export default function LessonPlayerPage() {
+  // 1. All hooks declared unconditionally at the very top
   const params = useParams();
   const router = useRouter();
-  const lessonId = params.lessonId as string;
+  const rawLessonId = params?.lessonId;
+  const lessonId = Array.isArray(rawLessonId) ? rawLessonId[0] : (rawLessonId as string);
 
   const {
     exercises,
@@ -45,7 +46,7 @@ export default function LessonPlayerPage() {
     abandonLesson,
   } = useLessonStore();
 
-  // Initialize session on mount
+  // 2. Initialize session on mount (Hook 1)
   useEffect(() => {
     if (lessonId) {
       console.log(`[LessonPlayerPage] Mounting lesson session for ID: ${lessonId}`);
@@ -58,6 +59,25 @@ export default function LessonPlayerPage() {
     };
   }, [lessonId, startLesson, abandonLesson]);
 
+  // 3. Navigate on completion (Hook 2 - must run unconditionally before any early returns)
+  useEffect(() => {
+    if (status === "completed" && completionResult) {
+      const accuracy = Math.round(
+        (Math.max(1, totalInitialExercises - mistakesCount) / Math.max(1, totalInitialExercises)) * 100
+      );
+      const timeSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
+      const queryParams = new URLSearchParams({
+        xp: String(completionResult.xp_earned),
+        accuracy: String(accuracy),
+        time: String(timeSeconds),
+        streak: String(completionResult.streak),
+        title: lessonTitle || "Spanish Lesson",
+      });
+      router.push(`/lesson/${lessonId}/complete?${queryParams.toString()}`);
+    }
+  }, [status, completionResult, totalInitialExercises, mistakesCount, startTime, lessonTitle, lessonId, router]);
+
+  // 4. Early returns ONLY after all hooks are declared
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-snow">
@@ -100,24 +120,6 @@ export default function LessonPlayerPage() {
     );
   }
 
-  // Completed: Route to dedicated celebration page
-  useEffect(() => {
-    if (status === "completed" && completionResult) {
-      const accuracy = Math.round(
-        (Math.max(1, totalInitialExercises - mistakesCount) / Math.max(1, totalInitialExercises)) * 100
-      );
-      const timeSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
-      const queryParams = new URLSearchParams({
-        xp: String(completionResult.xp_earned),
-        accuracy: String(accuracy),
-        time: String(timeSeconds),
-        streak: String(completionResult.streak),
-        title: lessonTitle || "Spanish Lesson",
-      });
-      router.push(`/lesson/${lessonId}/complete?${queryParams.toString()}`);
-    }
-  }, [status, completionResult, totalInitialExercises, mistakesCount, startTime, lessonTitle, lessonId, router]);
-
   if (status === "completed") {
     return (
       <div className="flex h-screen items-center justify-center bg-snow">
@@ -159,9 +161,10 @@ export default function LessonPlayerPage() {
             {currentExercise.prompt}
           </h2>
 
-          {/* Render Exercise Type */}
+          {/* Render Exercise Type with Key to ensure clean remounts without hook bleed */}
           {currentExercise.type === "select" && (
             <SelectExercise
+              key={currentExercise.id}
               exercise={currentExercise}
               value={selectedAnswer}
               onChange={selectOption}
@@ -171,6 +174,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "translate" && (
             <TranslateExercise
+              key={currentExercise.id}
               exercise={currentExercise}
               selectedWords={selectedWords}
               onAddWord={addWordTile}
@@ -182,6 +186,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "fill_blank" && (
             <FillBlankExercise
+              key={currentExercise.id}
               exercise={currentExercise}
               value={selectedAnswer}
               onChange={selectOption}
@@ -191,6 +196,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "match_pairs" && (
             <MatchPairsExercise
+              key={currentExercise.id}
               exercise={currentExercise}
               onChange={selectOption}
               disabled={status === "correct" || status === "incorrect"}
@@ -199,6 +205,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "type_answer" && (
             <TypeAnswerExercise
+              key={currentExercise.id}
               exercise={currentExercise}
               value={selectedAnswer}
               onChange={selectOption}
