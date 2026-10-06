@@ -48,7 +48,10 @@ export default function LessonPlayerPage() {
   // Initialize session on mount
   useEffect(() => {
     if (lessonId) {
+      console.log(`[LessonPlayerPage] Mounting lesson session for ID: ${lessonId}`);
       startLesson(lessonId);
+    } else {
+      console.warn("[LessonPlayerPage] Mounted without valid lessonId param");
     }
     return () => {
       abandonLesson();
@@ -69,17 +72,30 @@ export default function LessonPlayerPage() {
   }
 
   if (error) {
+    const isOutOfHearts = error.toLowerCase().includes("hearts");
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-snow p-6 text-center space-y-4">
-        <span className="text-5xl">💔</span>
-        <h2 className="text-2xl font-black text-cardinal">Unable to start lesson</h2>
+      <div className="flex h-screen flex-col items-center justify-center bg-snow p-6 text-center space-y-5">
+        <span className="text-5xl">{isOutOfHearts ? "💔" : "⚠️"}</span>
+        <h2 className="text-2xl font-black text-cardinal">
+          {isOutOfHearts ? "Out of Hearts" : "Unable to start lesson"}
+        </h2>
         <p className="text-wolf font-bold text-sm max-w-sm">{error}</p>
-        <button
-          onClick={() => router.push("/learn")}
-          className="px-6 py-3 bg-polar border-2 border-swan rounded-2xl font-black text-eel hover:bg-swan/40 transition"
-        >
-          Return to Learning Path
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          {isOutOfHearts && (
+            <button
+              onClick={() => startLesson(lessonId, true)}
+              className="px-6 py-3 bg-featherGreen text-snow border-b-4 border-featherGreenShadow rounded-2xl font-black hover:brightness-105 active:translate-y-1 transition"
+            >
+              Practice to Earn Hearts
+            </button>
+          )}
+          <button
+            onClick={() => router.push("/learn")}
+            className="px-6 py-3 bg-polar border-2 border-swan rounded-2xl font-black text-eel hover:bg-swan/40 transition"
+          >
+            Return to Learning Path
+          </button>
+        </div>
       </div>
     );
   }

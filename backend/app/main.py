@@ -68,11 +68,15 @@ app.include_router(v1_leaderboard.router, prefix=API_V1_PREFIX)
 app.include_router(v1_dev.router, prefix=API_V1_PREFIX)
 app.include_router(health.router, prefix=API_V1_PREFIX)
 
-# Also mount legacy and v1 path routes under /api for full backward compatibility
+# Also mount v1 and health routes under /api for full backward compatibility
 app.include_router(health.router, prefix="/api")
-app.include_router(v1_path.router, prefix="/api")
 app.include_router(v1_user.router, prefix="/api")
+app.include_router(v1_path.router, prefix="/api")
+app.include_router(v1_lessons.router, prefix="/api")
+app.include_router(v1_attempts.router, prefix="/api")
+app.include_router(v1_hearts.router, prefix="/api")
 app.include_router(v1_leaderboard.router, prefix="/api")
+app.include_router(v1_dev.router, prefix="/api")
 app.include_router(courses.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(attempts.router, prefix="/api")

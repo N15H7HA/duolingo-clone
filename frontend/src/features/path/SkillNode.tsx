@@ -42,11 +42,18 @@ export default function SkillNode({ skill, unitColor, horizontalOffset }: SkillN
     }
   };
 
-  // Find next uncompleted lesson id or first lesson
-  const currentLesson =
-    skill.lessons?.find((l) => !l.is_completed) ||
-    skill.lessons?.[0] ||
-    { id: 1, position: 1, title: "Lesson 1" };
+  // Find next uncompleted lesson id or fallback
+  const lessonIdToLaunch =
+    skill.current_lesson_id ||
+    skill.lessons?.find((l) => !l.is_completed)?.id ||
+    skill.lessons?.[0]?.id ||
+    skill.id ||
+    1;
+
+  const currentLessonTitle =
+    skill.lessons?.find((l) => l.id === lessonIdToLaunch)?.title ||
+    skill.lessons?.[0]?.title ||
+    "Master Spanish phrases and words";
 
   const isClickable = skill.status === "active" || skill.status === "completed";
 
@@ -155,11 +162,11 @@ export default function SkillNode({ skill, unitColor, horizontalOffset }: SkillN
                 <p className="text-xs font-bold text-wolf mt-0.5">
                   {skill.status === "completed"
                     ? "Practice this skill to refresh vocabulary"
-                    : currentLesson.title || "Master Spanish phrases and words"}
+                    : currentLessonTitle}
                 </p>
               </div>
 
-              <Link href={`/lesson/${currentLesson.id}`} className="block pt-1">
+              <Link href={`/lesson/${lessonIdToLaunch}`} className="block pt-1">
                 <Button3D variant="green" fullWidth size="md">
                   {skill.status === "completed" ? "PRACTICE +5 XP" : "START +10 XP"}
                 </Button3D>

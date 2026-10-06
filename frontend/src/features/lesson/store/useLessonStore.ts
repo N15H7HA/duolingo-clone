@@ -73,12 +73,17 @@ export const useLessonStore = create<LessonState>((set, get) => ({
   error: null,
 
   startLesson: async (lessonId, isPractice = false) => {
+    console.log(`[LessonStore] Starting lesson session (ID: ${lessonId}, isPractice: ${isPractice})`);
     set({ isLoading: true, error: null });
     try {
       const endpoint = isPractice ? "/practice/start" : `/lessons/${lessonId}/start`;
       const data = await fetchApi<LessonStartResponse>(endpoint, {
         method: "POST",
       });
+
+      console.log(
+        `[LessonStore] Lesson initialized successfully: Attempt #${data.attempt_id}, Title: "${data.lesson_title}", Exercises: ${data.exercises.length}`
+      );
 
       set({
         attemptId: data.attempt_id,
@@ -100,6 +105,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         isLoading: false,
       });
     } catch (err: unknown) {
+      console.error(`[LessonStore] Failed to start lesson ${lessonId}:`, err);
       const msg = err instanceof Error ? err.message : "Failed to start lesson";
       set({ error: msg, isLoading: false });
     }

@@ -37,6 +37,7 @@ export interface SkillNode {
   icon: string;
   lesson_count: number;
   lessons_completed: number;
+  current_lesson_id?: number;
   progress_percentage: number;
   progress_ratio: number;
   status: "completed" | "active" | "locked";

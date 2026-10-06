@@ -58,6 +58,11 @@ class ProgressService:
                 else:
                     status = "locked"
 
+                # Derive current/next lesson ID
+                sorted_lessons = sorted(skill.lessons, key=lambda l: l.position)
+                next_lesson = next((l for l in sorted_lessons if l.position > lessons_completed), None)
+                current_lesson_id = next_lesson.id if next_lesson else (sorted_lessons[0].id if sorted_lessons else skill.id)
+
                 skills_output.append({
                     "id": skill.id,
                     "unit_id": skill.unit_id,
@@ -66,6 +71,7 @@ class ProgressService:
                     "icon": skill.icon,
                     "lesson_count": lesson_count,
                     "lessons_completed": lessons_completed,
+                    "current_lesson_id": current_lesson_id,
                     "progress_percentage": progress_percentage,
                     "progress_ratio": ratio,
                     "status": status,
@@ -77,7 +83,7 @@ class ProgressService:
                             "title": l.title,
                             "is_completed": l.position <= lessons_completed,
                         }
-                        for l in sorted(skill.lessons, key=lambda l: l.position)
+                        for l in sorted_lessons
                     ],
                 })
 
