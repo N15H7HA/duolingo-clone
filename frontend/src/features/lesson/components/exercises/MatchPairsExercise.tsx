@@ -23,34 +23,31 @@ export default function MatchPairsExercise({
   const leftOptions = exercise.options.filter((o) => o.side === "left");
   const rightOptions = exercise.options.filter((o) => o.side === "right");
 
-  // If left/right sides aren't marked, divide in half
   const half = Math.ceil(exercise.options.length / 2);
   const finalLeft = leftOptions.length > 0 ? leftOptions : exercise.options.slice(0, half);
   const finalRight = rightOptions.length > 0 ? rightOptions : exercise.options.slice(half);
 
-  // Check matching whenever both sides are selected
   useEffect(() => {
     if (selectedLeft && selectedRight) {
       if (selectedLeft.pair_key && selectedLeft.pair_key === selectedRight.pair_key) {
-        // Matched!
+        // Matched
         const newMatched = [...matchedPairKeys, selectedLeft.pair_key];
         setMatchedPairKeys(newMatched);
         setSelectedLeft(null);
         setSelectedRight(null);
 
-        // Check if all pairs are completed
         const totalUniquePairs = new Set(exercise.options.map((o) => o.pair_key).filter(Boolean)).size;
         if (newMatched.length >= (totalUniquePairs || finalLeft.length)) {
           onChange("All matched");
         }
       } else {
-        // Mismatch wobble
+        // Mismatch
         setMismatched(true);
         const timer = setTimeout(() => {
           setSelectedLeft(null);
           setSelectedRight(null);
           setMismatched(false);
-        }, 600);
+        }, 500);
         return () => clearTimeout(timer);
       }
     }
@@ -69,7 +66,7 @@ export default function MatchPairsExercise({
               return (
                 <div
                   key={opt.id}
-                  className="p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center bg-feedbackGreenBg/40 text-featherGreen/40 border-2 border-dashed border-featherGreen/30 pointer-events-none select-none"
+                  className="p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center bg-[#D7FFB8]/40 text-[#58A700]/50 border-2 border-dashed border-[#58A700]/30 pointer-events-none select-none"
                 >
                   {opt.text}
                 </div>
@@ -79,15 +76,16 @@ export default function MatchPairsExercise({
             return (
               <button
                 key={opt.id}
+                type="button"
                 disabled={disabled || isMatched}
                 onClick={() => setSelectedLeft(opt)}
                 className={clsx(
-                  "w-full p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center border-2 border-b-[5px] transition-all duration-75",
+                  "w-full p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center border-2 border-b-4 transition-all duration-75",
                   isSelected
                     ? mismatched
-                      ? "bg-feedbackRedBg border-cardinal border-b-cardinalShadow text-cardinal animate-shake"
-                      : "bg-selectedCardBg border-macaw border-b-macawShadow text-macaw"
-                    : "bg-snow border-swan border-b-swan hover:bg-polar text-eel active:translate-y-[2px] active:border-b-[3px]"
+                      ? "bg-[#FFDFE0] border-[#FF4B4B] border-b-[#EA2B2B] text-[#FF4B4B] animate-shake"
+                      : "bg-[#DDF4FF] border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
+                    : "bg-white border-[#E5E5E5] border-b-[#CCCCCC] hover:bg-[#F7F7F7] text-[#4B4B4B] active:translate-y-[2px] active:border-b-2"
                 )}
               >
                 {opt.text}
@@ -106,7 +104,7 @@ export default function MatchPairsExercise({
               return (
                 <div
                   key={opt.id}
-                  className="p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center bg-feedbackGreenBg/40 text-featherGreen/40 border-2 border-dashed border-featherGreen/30 pointer-events-none select-none"
+                  className="p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center bg-[#D7FFB8]/40 text-[#58A700]/50 border-2 border-dashed border-[#58A700]/30 pointer-events-none select-none"
                 >
                   {opt.text}
                 </div>
@@ -116,15 +114,16 @@ export default function MatchPairsExercise({
             return (
               <button
                 key={opt.id}
+                type="button"
                 disabled={disabled || isMatched}
                 onClick={() => setSelectedRight(opt)}
                 className={clsx(
-                  "w-full p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center border-2 border-b-[5px] transition-all duration-75",
+                  "w-full p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center border-2 border-b-4 transition-all duration-75",
                   isSelected
                     ? mismatched
-                      ? "bg-feedbackRedBg border-cardinal border-b-cardinalShadow text-cardinal animate-shake"
-                      : "bg-selectedCardBg border-macaw border-b-macawShadow text-macaw"
-                    : "bg-snow border-swan border-b-swan hover:bg-polar text-eel active:translate-y-[2px] active:border-b-[3px]"
+                      ? "bg-[#FFDFE0] border-[#FF4B4B] border-b-[#EA2B2B] text-[#FF4B4B] animate-shake"
+                      : "bg-[#DDF4FF] border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
+                    : "bg-white border-[#E5E5E5] border-b-[#CCCCCC] hover:bg-[#F7F7F7] text-[#4B4B4B] active:translate-y-[2px] active:border-b-2"
                 )}
               >
                 {opt.text}

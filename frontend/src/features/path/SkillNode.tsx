@@ -3,46 +3,45 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { Check, Lock, Star, Sparkles, BookOpen, Coffee, Apple, MessageCircle, Utensils, Users } from "lucide-react";
+import { Check, Lock, Star, Sparkles, Coffee, Apple, MessageCircle, Utensils, Users } from "lucide-react";
 import { SkillNode as SkillNodeType } from "@/hooks/useDuolingo";
 import Button3D from "@/components/ui/Button3D";
 
 interface SkillNodeProps {
   skill: SkillNodeType;
-  unitColor: string;
+  unitColor?: string;
   horizontalOffset: number;
 }
 
-export default function SkillNode({ skill, unitColor, horizontalOffset }: SkillNodeProps) {
+export default function SkillNode({ skill, unitColor = "#58CC02", horizontalOffset }: SkillNodeProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   // Icon mapping helper
   const renderIcon = () => {
     if (skill.status === "locked") {
-      return <Lock className="w-8 h-8 text-hare stroke-[2.5]" />;
+      return <Lock className="w-8 h-8 text-[#AFAFAF] stroke-[2.5]" />;
     }
     if (skill.status === "completed") {
-      return <Check className="w-9 h-9 text-snow stroke-[3.5]" />;
+      return <Check className="w-9 h-9 text-white stroke-[3.5]" />;
     }
 
-    // Active icons based on icon key
     switch (skill.icon) {
       case "coffee":
-        return <Coffee className="w-8 h-8 text-snow stroke-[2.5]" />;
+        return <Coffee className="w-8 h-8 text-white stroke-[2.5]" />;
       case "apple":
-        return <Apple className="w-8 h-8 text-snow stroke-[2.5]" />;
+        return <Apple className="w-8 h-8 text-white stroke-[2.5]" />;
       case "chat":
-        return <MessageCircle className="w-8 h-8 text-snow stroke-[2.5]" />;
+        return <MessageCircle className="w-8 h-8 text-white stroke-[2.5]" />;
       case "fork_knife":
-        return <Utensils className="w-8 h-8 text-snow stroke-[2.5]" />;
+        return <Utensils className="w-8 h-8 text-white stroke-[2.5]" />;
       case "family_tree":
-        return <Users className="w-8 h-8 text-snow stroke-[2.5]" />;
+        return <Users className="w-8 h-8 text-white stroke-[2.5]" />;
       default:
-        return <Star className="w-8 h-8 fill-snow text-snow stroke-[2.5]" />;
+        return <Star className="w-8 h-8 fill-white text-white stroke-[2.5]" />;
     }
   };
 
-  // Find next uncompleted lesson id or fallback
+  // Find target lesson ID to launch
   const lessonIdToLaunch =
     skill.current_lesson_id ||
     skill.lessons?.find((l) => !l.is_completed)?.id ||
@@ -57,48 +56,54 @@ export default function SkillNode({ skill, unitColor, horizontalOffset }: SkillN
 
   const isClickable = skill.status === "active" || skill.status === "completed";
 
+  const buttonStyle = {
+    completed: "bg-[#FFC800] border-[#E5A500] text-white hover:brightness-105 active:translate-y-[2px] active:border-b-[4px]",
+    active: "bg-[#58CC02] border-[#58A700] text-white hover:brightness-105 active:translate-y-[2px] active:border-b-[4px] ring-4 ring-[#58CC02]/20",
+    locked: "bg-[#E5E5E5] border-[#CCCCCC] text-[#AFAFAF] cursor-not-allowed",
+  }[skill.status];
+
   return (
     <div
       className={clsx(
-        "relative flex flex-col items-center select-none transition-transform duration-300",
+        "relative flex justify-center items-center h-28 my-6 select-none transition-transform duration-300",
         isPopoverOpen ? "z-40" : "z-10"
       )}
       style={{ transform: `translateX(${horizontalOffset}px)` }}
     >
-      {/* Bouncing START Speech Bubble on Active Node (hidden when popover is open) */}
+      {/* Floating Bouncing Speech Bubble on Active Node (default when popover closed) */}
       {skill.status === "active" && !isPopoverOpen && (
-        <div className="absolute -top-11 z-20 animate-bounce-subtle pointer-events-none">
-          <div className="bg-snow text-featherGreen px-3.5 py-1.5 rounded-xl font-black text-xs uppercase tracking-wider border-2 border-swan shadow-md flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 fill-featherGreen" />
-            <span>Start</span>
+        <div className="absolute -top-14 left-1/2 -translate-x-1/2 z-20 animate-bounce pointer-events-none">
+          <div className="bg-white text-[#58CC02] px-4 py-1.5 rounded-2xl font-black text-xs uppercase tracking-wider border-2 border-[#E5E5E5] border-b-4 shadow-md flex items-center gap-1.5 whitespace-nowrap">
+            <Sparkles className="w-3.5 h-3.5 fill-[#58CC02]" />
+            <span>START</span>
           </div>
-          {/* Tooltip triangle pointer */}
-          <div className="w-2.5 h-2.5 bg-snow border-r-2 border-b-2 border-swan transform rotate-45 mx-auto -mt-1.5" />
+          {/* Pointer triangle */}
+          <div className="w-2.5 h-2.5 bg-white border-r-2 border-b-2 border-[#E5E5E5] transform rotate-45 mx-auto -mt-1.5" />
         </div>
       )}
 
-      {/* Main Circular Skill Button Wrapper with optional Progress Ring */}
+      {/* Main Circular Skill Button */}
       <div className="relative flex items-center justify-center">
         {/* Progress Ring for active node */}
         {skill.status === "active" && (
-          <svg className="absolute -inset-2 w-24 h-24 -rotate-90 pointer-events-none">
+          <svg className="absolute -inset-2.5 w-[100px] h-[100px] -rotate-90 pointer-events-none">
             <circle
-              cx="48"
-              cy="48"
-              r="44"
+              cx="50"
+              cy="50"
+              r="45"
               stroke="#E5E5E5"
               strokeWidth="5"
               fill="transparent"
             />
             <circle
-              cx="48"
-              cy="48"
-              r="44"
+              cx="50"
+              cy="50"
+              r="45"
               stroke="#FFC800"
               strokeWidth="5"
               fill="transparent"
-              strokeDasharray={2 * Math.PI * 44}
-              strokeDashoffset={2 * Math.PI * 44 * (1 - (skill.progress_ratio || 0))}
+              strokeDasharray={2 * Math.PI * 45}
+              strokeDashoffset={2 * Math.PI * 45 * (1 - (skill.progress_ratio || 0))}
               strokeLinecap="round"
               className="transition-all duration-500 ease-out"
             />
@@ -109,31 +114,16 @@ export default function SkillNode({ skill, unitColor, horizontalOffset }: SkillN
           onClick={() => isClickable && setIsPopoverOpen(!isPopoverOpen)}
           disabled={skill.status === "locked"}
           aria-label={`${skill.name} - ${skill.status}`}
-          style={{
-            backgroundColor:
-              skill.status === "completed"
-                ? "#FFC800"
-                : skill.status === "active"
-                ? unitColor
-                : "#E5E5E5",
-            borderColor:
-              skill.status === "completed"
-                ? "#E5B200"
-                : skill.status === "active"
-                ? "#46A302"
-                : "#CECECE",
-          }}
           className={clsx(
-            "relative w-20 h-20 rounded-full flex items-center justify-center border-b-[6px] transition-all active:translate-y-[3px] active:border-b-[3px] focus:outline-none shadow-sm",
-            isClickable ? "cursor-pointer hover:brightness-105" : "cursor-not-allowed opacity-90",
-            skill.status === "active" ? "ring-4 ring-featherGreen/20" : ""
+            "w-20 h-20 rounded-full border-b-[6px] flex items-center justify-center font-extrabold text-2xl relative transition-all duration-75 shadow-sm focus:outline-none",
+            buttonStyle
           )}
         >
           {renderIcon()}
         </button>
       </div>
 
-      {/* Floating Popover on Click */}
+      {/* Floating Self-Contained Popover on Click */}
       {isPopoverOpen && (
         <>
           {/* Transparent Backdrop to dismiss popover when clicking outside */}
@@ -142,24 +132,24 @@ export default function SkillNode({ skill, unitColor, horizontalOffset }: SkillN
             onClick={() => setIsPopoverOpen(false)}
           />
 
-          {/* Popover Card anchored cleanly below the node */}
-          <div className="absolute top-[96px] z-40 w-72 sm:w-80 bg-snow rounded-3xl p-5 border-2 border-swan shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+          {/* Popover Card */}
+          <div className="absolute top-[96px] z-40 w-72 sm:w-80 bg-white rounded-3xl p-5 border-2 border-[#E5E5E5] border-b-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
             {/* Top pointer arrow */}
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-snow border-t-2 border-l-2 border-swan transform rotate-45" />
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-2 border-l-2 border-[#E5E5E5] transform rotate-45" />
 
             <div className="relative text-left space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black uppercase text-wolf tracking-wider">
+                <span className="text-xs font-black uppercase text-[#777777] tracking-wider">
                   {skill.status === "completed" ? "Completed Skill" : "Active Skill"}
                 </span>
-                <span className="text-xs font-black text-fox">
+                <span className="text-xs font-black text-[#FF9600]">
                   Lesson {skill.lessons_completed + (skill.status === "completed" ? 0 : 1)} of {skill.lesson_count}
                 </span>
               </div>
 
               <div>
-                <h4 className="text-xl font-black text-eel">{skill.name}</h4>
-                <p className="text-xs font-bold text-wolf mt-0.5">
+                <h4 className="text-xl font-black text-[#4B4B4B]">{skill.name}</h4>
+                <p className="text-xs font-bold text-[#777777] mt-0.5">
                   {skill.status === "completed"
                     ? "Practice this skill to refresh vocabulary"
                     : currentLessonTitle}
@@ -167,7 +157,7 @@ export default function SkillNode({ skill, unitColor, horizontalOffset }: SkillN
               </div>
 
               <Link href={`/lesson/${lessonIdToLaunch}`} className="block pt-1">
-                <Button3D variant="green" fullWidth size="md">
+                <Button3D variant={skill.status === "completed" ? "gold" : "green"} fullWidth size="md">
                   {skill.status === "completed" ? "PRACTICE +5 XP" : "START +10 XP"}
                 </Button3D>
               </Link>

@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Check, X, AlertCircle } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { LessonStatus } from "../store/useLessonStore";
 import Button3D from "@/components/ui/Button3D";
 import clsx from "clsx";
@@ -52,27 +52,27 @@ export default function FeedbackDrawer({
     <>
       <footer
         className={clsx(
-          "fixed bottom-0 left-0 right-0 z-40 transition-all duration-250 ease-out border-t-2 select-none",
+          "fixed bottom-0 left-0 right-0 z-50 transition-all duration-200 ease-out border-t-2 select-none py-6 px-4 sm:px-8",
           status === "correct"
-            ? "bg-feedbackGreenBg border-featherGreenShadow py-6 sm:py-8"
+            ? "bg-[#D7FFB8] border-[#58A700]"
             : status === "incorrect"
-            ? "bg-feedbackRedBg border-cardinalShadow py-6 sm:py-8"
-            : "bg-snow border-swan py-5 sm:py-6"
+            ? "bg-[#FFDFE0] border-[#EA2B2B]"
+            : "bg-white border-[#E5E5E5]"
         )}
       >
-        <div className="max-w-4xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Feedback Message */}
           {status === "correct" && (
-            <div className="flex items-center gap-4 w-full sm:w-auto animate-in slide-in-from-bottom-2 duration-200">
-              <div className="w-12 h-12 rounded-full bg-featherGreen text-snow flex items-center justify-center font-black text-2xl shadow-sm">
+            <div className="flex items-center gap-4 w-full sm:w-auto animate-in slide-in-from-bottom-2 duration-150">
+              <div className="w-12 h-12 rounded-full bg-[#58CC02] text-white flex items-center justify-center font-black text-2xl shadow-sm shrink-0">
                 <Check className="w-7 h-7 stroke-[3.5]" />
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-black text-featherGreen">
-                  {feedback?.accent_warning ? "Good! (Check your accents)" : "Great job!"}
+                <h3 className="text-xl sm:text-2xl font-extrabold text-[#58A700]">
+                  {feedback?.accent_warning ? "Nicely done! (Pay attention to accents)" : "Nicely done!"}
                 </h3>
                 {feedback?.accent_warning && (
-                  <p className="text-xs sm:text-sm font-bold text-featherGreenShadow">
+                  <p className="text-xs sm:text-sm font-bold text-[#58A700]">
                     Accented solution: <span className="font-extrabold underline">{feedback.solution}</span>
                   </p>
                 )}
@@ -81,15 +81,15 @@ export default function FeedbackDrawer({
           )}
 
           {status === "incorrect" && (
-            <div className="flex items-start gap-4 w-full sm:w-auto animate-in slide-in-from-bottom-2 duration-200">
-              <div className="w-12 h-12 rounded-full bg-cardinal text-snow flex items-center justify-center font-black text-2xl shadow-sm shrink-0">
+            <div className="flex items-start gap-4 w-full sm:w-auto animate-in slide-in-from-bottom-2 duration-150">
+              <div className="w-12 h-12 rounded-full bg-[#FF4B4B] text-white flex items-center justify-center font-black text-2xl shadow-sm shrink-0">
                 <X className="w-7 h-7 stroke-[3.5]" />
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-black text-cardinal">
+                <h3 className="text-lg sm:text-xl font-extrabold text-[#EA2B2B]">
                   Correct solution:
                 </h3>
-                <p className="text-base sm:text-lg font-black text-cardinalShadow">
+                <p className="text-base sm:text-lg font-extrabold text-[#EA2B2B]">
                   {feedback?.solution || "Check answer"}
                 </p>
               </div>
@@ -99,15 +99,15 @@ export default function FeedbackDrawer({
           {!isFeedbackActive && <div className="hidden sm:block" />}
 
           {/* Action Button */}
-          <div className="w-full sm:w-48">
+          <div className="w-full sm:w-44 ml-auto">
             {status === "correct" && (
               <Button3D
                 variant="green"
                 fullWidth
-                size="lg"
+                size="md"
                 onClick={onContinue}
               >
-                Continue
+                CONTINUE
               </Button3D>
             )}
 
@@ -115,10 +115,10 @@ export default function FeedbackDrawer({
               <Button3D
                 variant="red"
                 fullWidth
-                size="lg"
+                size="md"
                 onClick={onContinue}
               >
-                Got It
+                CONTINUE
               </Button3D>
             )}
 
@@ -126,11 +126,11 @@ export default function FeedbackDrawer({
               <Button3D
                 variant={hasSelection ? "green" : "disabled"}
                 fullWidth
-                size="lg"
+                size="md"
                 disabled={!hasSelection || status === "checking"}
                 onClick={onCheck}
               >
-                {status === "checking" ? "Checking..." : "Check"}
+                {status === "checking" ? "CHECKING..." : "CHECK"}
               </Button3D>
             )}
           </div>
@@ -139,14 +139,14 @@ export default function FeedbackDrawer({
 
       {/* Out of Hearts Modal */}
       {status === "out_of_hearts" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-eel/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-snow rounded-3xl p-6 sm:p-8 max-w-sm w-full border-2 border-swan shadow-2xl text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-feedbackRedBg mx-auto flex items-center justify-center text-3xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#4B4B4B]/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full border-2 border-[#E5E5E5] shadow-2xl text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-[#FFDFE0] mx-auto flex items-center justify-center text-3xl">
               💔
             </div>
-            <h3 className="text-2xl font-black text-eel">Out of Hearts!</h3>
-            <p className="text-sm font-bold text-wolf">
-              You ran out of hearts in this session. Practice in review mode to earn more hearts or refill with gems.
+            <h3 className="text-2xl font-black text-[#4B4B4B]">Out of Hearts!</h3>
+            <p className="text-sm font-bold text-[#777777]">
+              You ran out of hearts in this session. Practice to earn hearts back or refill with gems.
             </p>
             <div className="space-y-2.5 pt-2">
               <Button3D

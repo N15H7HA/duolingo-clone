@@ -24,31 +24,31 @@ export default function Button3D({
   const isActuallyDisabled = disabled || variant === "disabled";
 
   const sizeClasses = {
-    sm: "h-[42px] px-4 text-sm font-bold",
-    md: "h-[50px] px-6 text-base font-extrabold",
-    lg: "h-[56px] px-8 text-lg font-extrabold",
+    sm: "h-[42px] px-4 text-xs font-extrabold tracking-[0.8px]",
+    md: "h-[50px] px-6 text-sm font-extrabold tracking-[0.8px]",
+    lg: "h-[54px] px-8 text-base font-extrabold tracking-[0.8px]",
   }[size];
 
   const variantClasses = {
     green:
-      "bg-featherGreen text-snow border-featherGreenShadow hover:brightness-105 active:translate-y-[4px] active:border-b-0",
+      "bg-[#58CC02] text-white border-[#58A700] hover:brightness-105 active:translate-y-[2px] active:border-b-2 cursor-pointer",
     blue:
-      "bg-macaw text-snow border-macawShadow hover:brightness-105 active:translate-y-[4px] active:border-b-0",
+      "bg-[#1CB0F6] text-white border-[#1899D6] hover:brightness-105 active:translate-y-[2px] active:border-b-2 cursor-pointer",
     red:
-      "bg-cardinal text-snow border-cardinalShadow hover:brightness-105 active:translate-y-[4px] active:border-b-0",
+      "bg-[#FF4B4B] text-white border-[#EA2B2B] hover:brightness-105 active:translate-y-[2px] active:border-b-2 cursor-pointer",
     gold:
-      "bg-bee text-snow border-[#E5B200] hover:brightness-105 active:translate-y-[4px] active:border-b-0",
+      "bg-[#FFC800] text-white border-[#E5A500] hover:brightness-105 active:translate-y-[2px] active:border-b-2 cursor-pointer",
     white:
-      "bg-snow text-eel border-swan hover:bg-polar active:translate-y-[4px] active:border-b-0",
+      "bg-white text-[#4B4B4B] border-[#E5E5E5] hover:bg-[#F7F7F7] active:translate-y-[2px] active:border-b-2 cursor-pointer",
     disabled:
-      "bg-polar text-hare border-swan cursor-not-allowed active:translate-y-0 active:border-b-4",
+      "bg-[#E5E5E5] text-[#AFAFAF] border-[#CCCCCC] cursor-not-allowed active:translate-y-0 active:border-b-4",
   }[isActuallyDisabled ? "disabled" : variant];
 
   return (
     <button
       disabled={isActuallyDisabled}
       className={clsx(
-        "relative inline-flex items-center justify-center rounded-2xl uppercase tracking-wider transition-all duration-75 select-none",
+        "relative inline-flex items-center justify-center rounded-2xl uppercase select-none transition-all duration-75",
         "border-b-4 border-solid",
         sizeClasses,
         variantClasses,

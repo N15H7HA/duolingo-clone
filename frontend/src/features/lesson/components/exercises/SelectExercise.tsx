@@ -32,7 +32,7 @@ export default function SelectExercise({
 
   return (
     <div className="space-y-4 max-w-xl mx-auto w-full select-none">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {exercise.options.map((opt, index) => {
           const isSelected = value === opt.text;
           const badgeNum = index + 1;
@@ -40,18 +40,19 @@ export default function SelectExercise({
           return (
             <button
               key={opt.id}
+              type="button"
               disabled={disabled}
               onClick={() => onChange(opt.text)}
               className={clsx(
-                "relative flex items-center justify-between p-4 sm:p-5 rounded-2xl font-extrabold text-base sm:text-lg text-left border-2 border-b-[5px] transition-all duration-75",
-                disabled ? "cursor-default" : "cursor-pointer active:translate-y-[2px] active:border-b-[3px]",
+                "relative flex items-center justify-between p-5 rounded-2xl font-extrabold text-base sm:text-lg text-left border-2 border-b-4 transition-all duration-75",
+                disabled ? "cursor-default" : "cursor-pointer active:translate-y-[2px] active:border-b-2",
                 isSelected
-                  ? "bg-selectedCardBg border-macaw border-b-macawShadow text-macaw shadow-sm"
-                  : "bg-snow border-swan border-b-swan hover:bg-polar text-eel"
+                  ? "bg-[#DDF4FF] border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6] shadow-sm"
+                  : "bg-white border-[#E5E5E5] border-b-[#CCCCCC] hover:bg-[#F7F7F7] text-[#4B4B4B]"
               )}
             >
               <div className="flex items-center gap-3">
-                <span className="text-xl">
+                <span className="text-2xl">
                   {exercise.image_key === "boy"
                     ? "👦"
                     : exercise.image_key === "girl"
@@ -60,6 +61,10 @@ export default function SelectExercise({
                     ? "🐱"
                     : exercise.image_key === "dog"
                     ? "🐶"
+                    : exercise.image_key === "sun"
+                    ? "☀️"
+                    : exercise.image_key === "hand_wave"
+                    ? "👋"
                     : "💡"}
                 </span>
                 <span>{opt.text}</span>
@@ -68,10 +73,10 @@ export default function SelectExercise({
               {/* Number key shortcut badge */}
               <span
                 className={clsx(
-                  "text-xs font-black px-2 py-0.5 rounded-lg border",
+                  "text-xs font-black px-2.5 py-1 rounded-lg border",
                   isSelected
-                    ? "border-macaw text-macaw bg-snow"
-                    : "border-swan text-wolf bg-polar"
+                    ? "border-[#1CB0F6] text-[#1CB0F6] bg-white"
+                    : "border-[#E5E5E5] text-[#777777] bg-[#F7F7F7]"
                 )}
               >
                 {badgeNum}
