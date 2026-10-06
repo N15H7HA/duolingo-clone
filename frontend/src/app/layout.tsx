@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   description: "Learn Spanish in just 5 minutes a day with game-like lessons.",
 };
 
+import DevDrawer from "@/components/dev/DevDrawer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -23,7 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={nunito.variable}>
       <body className="font-nunito bg-snow text-eel min-h-screen antialiased selection:bg-selectedCardBg">
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <DevDrawer />
+        </QueryProvider>
       </body>
     </html>
   );

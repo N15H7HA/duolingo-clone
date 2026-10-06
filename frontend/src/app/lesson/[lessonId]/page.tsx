@@ -31,6 +31,8 @@ export default function LessonPlayerPage() {
     completionResult,
     completedCount,
     totalInitialExercises,
+    mistakesCount,
+    startTime,
     isLoading,
     error,
     startLesson,
@@ -82,13 +84,34 @@ export default function LessonPlayerPage() {
     );
   }
 
-  // Completed celebration screen
+  // Completed: Route to dedicated celebration page
+  useEffect(() => {
+    if (status === "completed" && completionResult) {
+      const accuracy = Math.round(
+        (Math.max(1, totalInitialExercises - mistakesCount) / Math.max(1, totalInitialExercises)) * 100
+      );
+      const timeSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
+      const queryParams = new URLSearchParams({
+        xp: String(completionResult.xp_earned),
+        accuracy: String(accuracy),
+        time: String(timeSeconds),
+        streak: String(completionResult.streak),
+        title: lessonTitle || "Spanish Lesson",
+      });
+      router.push(`/lesson/${lessonId}/complete?${queryParams.toString()}`);
+    }
+  }, [status, completionResult, totalInitialExercises, mistakesCount, startTime, lessonTitle, lessonId, router]);
+
   if (status === "completed") {
     return (
-      <LessonCelebration
-        result={completionResult}
-        lessonTitle={lessonTitle}
-      />
+      <div className="flex h-screen items-center justify-center bg-snow">
+        <div className="text-center space-y-4">
+          <span className="text-6xl animate-bounce">🎉</span>
+          <p className="font-extrabold text-wolf uppercase tracking-wider text-sm">
+            Completing lesson...
+          </p>
+        </div>
+      </div>
     );
   }
 
