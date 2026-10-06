@@ -10,6 +10,7 @@ import {
   Target,
   ShoppingBag,
   User as UserIcon,
+  Settings as SettingsIcon,
   FastForward,
   RotateCcw,
 } from "lucide-react";
@@ -21,6 +22,7 @@ const navItems = [
   { label: "Quests", href: "/quests", icon: Target },
   { label: "Shop", href: "/shop", icon: ShoppingBag },
   { label: "Profile", href: "/profile", icon: UserIcon },
+  { label: "Settings", href: "/settings", icon: SettingsIcon },
 ];
 
 export default function Sidebar() {

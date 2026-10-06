@@ -127,6 +127,20 @@ export function useAdvanceDay() {
   });
 }
 
+export function useUpdateSettings() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (settings: { daily_goal_xp?: number; sound_enabled?: boolean; dark_mode?: boolean }) =>
+      fetchApi<UserProfile>("/me/settings", {
+        method: "PATCH",
+        body: JSON.stringify(settings),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-me"] });
+    },
+  });
+}
+
 export function useResetDemo() {
   const queryClient = useQueryClient();
   return useMutation({
