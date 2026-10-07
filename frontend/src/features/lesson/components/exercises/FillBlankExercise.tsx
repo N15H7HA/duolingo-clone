@@ -38,7 +38,7 @@ export default function FillBlankExercise({
   return (
     <div className="space-y-8 max-w-xl mx-auto w-full select-none">
       {/* Sentence with Gap */}
-      <div className="p-6 sm:p-8 bg-polar rounded-3xl border-2 border-swan text-xl sm:text-2xl font-black text-eel flex flex-wrap items-center gap-2 shadow-sm">
+      <div className="p-6 sm:p-8 bg-[#F7F7F7] dark:bg-[#18272F] rounded-3xl border-2 border-[#E5E5E5] dark:border-[#263843] text-xl sm:text-2xl font-black text-[#3C3C3C] dark:text-white flex flex-wrap items-center gap-2 shadow-sm">
         <span>{prefix}</span>
 
         {/* The Drop Gap */}
@@ -46,8 +46,8 @@ export default function FillBlankExercise({
           className={clsx(
             "min-w-[110px] px-4 py-2 rounded-2xl border-2 text-center text-lg sm:text-xl font-black transition-all inline-flex items-center justify-center",
             value
-              ? "bg-selectedCardBg border-[#1CB0F6] text-[#1CB0F6] shadow-sm animate-in zoom-in-95"
-              : "bg-snow border-dashed border-hare/50 text-transparent"
+              ? "bg-[#DDF4FF] dark:bg-[#142B36] border-[#1CB0F6] text-[#1CB0F6] shadow-sm animate-in zoom-in-95"
+              : "bg-white dark:bg-[#131F24] border-dashed border-[#AFAFAF] dark:border-[#8598A3] text-transparent"
           )}
         >
           {value || "placeholder"}
@@ -72,8 +72,8 @@ export default function FillBlankExercise({
                 "relative flex items-center gap-3 px-6 py-3.5 rounded-2xl font-extrabold text-base sm:text-lg border-2 border-b-4 transition-all duration-75 shadow-sm",
                 disabled ? "cursor-default" : "cursor-pointer active:translate-y-[2px] active:border-b-2",
                 isSelected
-                  ? "bg-selectedCardBg border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
-                  : "bg-snow border-swan border-b-swan/80 hover:bg-polar text-eel"
+                  ? "bg-[#DDF4FF] dark:bg-[#142B36] border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"
+                  : "bg-white dark:bg-[#18272F] border-[#E5E5E5] dark:border-[#263843] hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D] text-[#4B4B4B] dark:text-white"
               )}
             >
               <span>{opt.text}</span>
@@ -81,8 +81,8 @@ export default function FillBlankExercise({
                 className={clsx(
                   "text-xs font-black px-2 py-0.5 rounded-lg border",
                   isSelected
-                    ? "border-[#1CB0F6] text-[#1CB0F6] bg-snow"
-                    : "border-swan text-wolf bg-polar"
+                    ? "border-[#1CB0F6] text-[#1CB0F6] bg-white dark:bg-[#142B36]"
+                    : "border-[#E5E5E5] dark:border-[#263843] text-[#777777] dark:text-[#8598A3] bg-[#F7F7F7] dark:bg-[#18272F]"
                 )}
               >
                 {badgeNum}

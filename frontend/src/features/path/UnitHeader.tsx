@@ -10,22 +10,28 @@ interface UnitHeaderProps {
   title: string;
   description: string;
   color?: string;
+  sectionNumber?: number;
 }
 
-export default function UnitHeader({ position, title, description, color = "#58CC02" }: UnitHeaderProps) {
+export default function UnitHeader({
+  position,
+  title,
+  description,
+  color = "#58CC02",
+  sectionNumber = 1,
+}: UnitHeaderProps) {
   const [isGuidebookOpen, setIsGuidebookOpen] = useState(false);
 
   return (
     <>
       <div
         style={{ backgroundColor: color }}
-        className="w-full text-white rounded-2xl p-6 mb-12 shadow-sm flex items-center justify-between border-b-4 border-black/15 select-none transition-all"
+        className="w-full text-white rounded-2xl p-6 mb-8 shadow-sm flex items-center justify-between border-b-4 border-black/15 select-none transition-all"
       >
-        <div className="space-y-1 pr-4">
-          <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-white/90">
-            Unit {position}
-          </h3>
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight">{title}</h2>
+        <div className="space-y-1.5 pr-4">
+          <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white">
+            SECTION {sectionNumber}, UNIT {position} — {title}
+          </h2>
           <p className="text-xs sm:text-sm font-bold text-white/95 max-w-md line-clamp-2">
             {description}
           </p>
@@ -36,10 +42,10 @@ export default function UnitHeader({ position, title, description, color = "#58C
             variant="white"
             size="sm"
             onClick={() => setIsGuidebookOpen(true)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-[#58CC02] font-black"
           >
             <BookOpen className="w-4 h-4 stroke-[2.5]" />
-            <span>Guidebook</span>
+            <span className="hidden sm:inline">Guidebook</span>
           </Button3D>
         </div>
       </div>

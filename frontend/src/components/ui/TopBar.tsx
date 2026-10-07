@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Flame, Gem, Heart, Sparkles } from "lucide-react";
+import { Flame, Gem, Heart } from "lucide-react";
 import { useMe, useHeartRefill } from "@/hooks/useDuolingo";
 import Button3D from "./Button3D";
 
@@ -12,12 +12,12 @@ export default function TopBar() {
 
   if (!user) {
     return (
-      <header className="sticky top-0 z-30 bg-snow/90 backdrop-blur border-b border-swan px-4 py-3 flex items-center justify-between">
-        <div className="h-6 w-24 bg-swan rounded animate-pulse" />
+      <header className="sticky top-0 z-30 bg-white/90 dark:bg-[#131F24]/90 backdrop-blur border-b border-[#E5E5E5] dark:border-[#263843] px-4 py-3 flex items-center justify-between">
+        <div className="h-6 w-24 bg-[#E5E5E5] dark:bg-[#263843] rounded animate-pulse" />
         <div className="flex gap-4">
-          <div className="h-6 w-16 bg-swan rounded animate-pulse" />
-          <div className="h-6 w-16 bg-swan rounded animate-pulse" />
-          <div className="h-6 w-16 bg-swan rounded animate-pulse" />
+          <div className="h-6 w-16 bg-[#E5E5E5] dark:bg-[#263843] rounded animate-pulse" />
+          <div className="h-6 w-16 bg-[#E5E5E5] dark:bg-[#263843] rounded animate-pulse" />
+          <div className="h-6 w-16 bg-[#E5E5E5] dark:bg-[#263843] rounded animate-pulse" />
         </div>
       </header>
     );
@@ -31,36 +31,36 @@ export default function TopBar() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-snow/95 backdrop-blur-md border-b border-swan px-4 md:px-8 py-3 flex items-center justify-between transition-all">
-        {/* Course Flag / Selector */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-polar cursor-pointer border border-transparent hover:border-swan transition-all">
+      <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#131F24]/95 backdrop-blur-md border-b border-[#E5E5E5] dark:border-[#263843] px-4 md:px-8 py-3 flex items-center justify-between transition-all select-none">
+        {/* Spanish Flag Pill */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-[#F7F7F7] dark:hover:bg-[#18272F] cursor-pointer border border-transparent hover:border-[#E5E5E5] dark:hover:border-[#263843] transition-all">
           <span className="text-2xl drop-shadow-sm">🇪🇸</span>
-          <span className="hidden sm:inline font-extrabold text-sm uppercase text-eel tracking-wider">
+          <span className="hidden sm:inline font-extrabold text-sm uppercase text-[#4B4B4B] dark:text-white tracking-wider">
             Spanish
           </span>
         </div>
 
         {/* Gamification Stats */}
         <div className="flex items-center gap-4 sm:gap-6">
-          {/* Streak */}
-          <div className="flex items-center gap-1.5 font-extrabold text-fox hover:bg-polar px-2.5 py-1 rounded-xl transition cursor-default">
-            <Flame className="w-6 h-6 fill-fox stroke-fox drop-shadow-sm" />
+          {/* Streak Fire Icon */}
+          <div className="flex items-center gap-1.5 font-extrabold text-[#FF9600] hover:bg-[#F7F7F7] dark:hover:bg-[#18272F] px-2.5 py-1 rounded-xl transition cursor-default">
+            <Flame className="w-6 h-6 fill-[#FF9600] stroke-[#FF9600] drop-shadow-sm" />
             <span className="text-base font-extrabold">{user.streak}</span>
           </div>
 
-          {/* Gems */}
-          <div className="flex items-center gap-1.5 font-extrabold text-macaw hover:bg-polar px-2.5 py-1 rounded-xl transition cursor-default">
-            <Gem className="w-5 h-5 fill-macaw stroke-macaw drop-shadow-sm" />
+          {/* Gem Diamond Icon */}
+          <div className="flex items-center gap-1.5 font-extrabold text-[#1CB0F6] hover:bg-[#F7F7F7] dark:hover:bg-[#18272F] px-2.5 py-1 rounded-xl transition cursor-default">
+            <Gem className="w-5 h-5 fill-[#1CB0F6] stroke-[#1CB0F6] drop-shadow-sm" />
             <span className="text-base font-extrabold">{user.gems}</span>
           </div>
 
-          {/* Hearts */}
+          {/* Heart Icon */}
           <button
             onClick={() => setShowHeartModal(true)}
-            className="flex items-center gap-1.5 font-extrabold text-cardinal hover:bg-polar px-2.5 py-1 rounded-xl transition cursor-pointer border border-transparent hover:border-swan"
+            className="flex items-center gap-1.5 font-extrabold text-[#FF4B4B] hover:bg-[#F7F7F7] dark:hover:bg-[#18272F] px-2.5 py-1 rounded-xl transition cursor-pointer border border-transparent hover:border-[#E5E5E5] dark:hover:border-[#263843]"
             title="Click to refill hearts"
           >
-            <Heart className="w-5 h-5 fill-cardinal stroke-cardinal drop-shadow-sm animate-pulse" />
+            <Heart className="w-5 h-5 fill-[#FF4B4B] stroke-[#FF4B4B] drop-shadow-sm animate-pulse" />
             <span className="text-base font-extrabold">{user.hearts}</span>
           </button>
         </div>
@@ -68,20 +68,22 @@ export default function TopBar() {
 
       {/* Heart Refill Modal */}
       {showHeartModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-eel/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-snow rounded-3xl p-6 max-w-md w-full border-2 border-swan shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#18272F] rounded-3xl p-6 max-w-md w-full border-2 border-[#E5E5E5] dark:border-[#263843] shadow-2xl relative">
             <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-feedbackRedBg flex items-center justify-center mx-auto mb-4 border border-cardinal/20">
-                <Heart className="w-10 h-10 fill-cardinal stroke-cardinal" />
+              <div className="w-16 h-16 rounded-2xl bg-[#FFDFE0] dark:bg-[#33181A] flex items-center justify-center mx-auto mb-4 border border-[#FF4B4B]/20">
+                <Heart className="w-10 h-10 fill-[#FF4B4B] stroke-[#FF4B4B]" />
               </div>
-              <h3 className="text-2xl font-extrabold text-eel mb-2">Hearts & Refill</h3>
-              <p className="text-wolf text-sm font-bold mb-4">
-                You have <span className="text-cardinal font-extrabold">{user.hearts} of 5 hearts</span>.
+              <h3 className="text-2xl font-extrabold text-[#4B4B4B] dark:text-white mb-2">
+                Hearts & Refill
+              </h3>
+              <p className="text-[#777777] dark:text-[#8598A3] text-sm font-bold mb-4">
+                You have <span className="text-[#FF4B4B] font-extrabold">{user.hearts} of 5 hearts</span>.
                 {user.hearts < 5 ? (
                   <>
                     <br />
                     Next heart regenerates in:{" "}
-                    <span className="text-macaw font-extrabold">
+                    <span className="text-[#1CB0F6] font-extrabold">
                       {Math.ceil(user.next_heart_in_seconds / 60)} mins
                     </span>
                   </>
@@ -91,13 +93,15 @@ export default function TopBar() {
               </p>
 
               {user.hearts < 5 && (
-                <div className="p-4 bg-polar rounded-2xl border border-swan mb-4 flex items-center justify-between">
+                <div className="p-4 bg-[#F7F7F7] dark:bg-[#131F24] rounded-2xl border border-[#E5E5E5] dark:border-[#263843] mb-4 flex items-center justify-between">
                   <div className="text-left">
-                    <p className="font-extrabold text-eel text-sm">Full Refill</p>
-                    <p className="text-wolf text-xs font-semibold">Refill all 5 hearts instantly</p>
+                    <p className="font-extrabold text-[#4B4B4B] dark:text-white text-sm">Full Refill</p>
+                    <p className="text-[#777777] dark:text-[#8598A3] text-xs font-semibold">
+                      Refill all 5 hearts instantly
+                    </p>
                   </div>
-                  <div className="flex items-center gap-1 text-macaw font-extrabold text-sm">
-                    <Gem className="w-4 h-4 fill-macaw" />
+                  <div className="flex items-center gap-1 text-[#1CB0F6] font-extrabold text-sm">
+                    <Gem className="w-4 h-4 fill-[#1CB0F6]" />
                     <span>350</span>
                   </div>
                 </div>
@@ -111,7 +115,11 @@ export default function TopBar() {
                     onClick={handleRefill}
                     disabled={user.gems < 350 || heartRefill.isPending}
                   >
-                    {heartRefill.isPending ? "Refilling..." : user.gems < 350 ? "Not Enough Gems" : "Refill for 350 Gems"}
+                    {heartRefill.isPending
+                      ? "Refilling..."
+                      : user.gems < 350
+                      ? "Not Enough Gems"
+                      : "Refill for 350 Gems"}
                   </Button3D>
                 )}
                 <Button3D

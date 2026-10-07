@@ -5,12 +5,6 @@ import { StrippedExercise } from "@/types";
 import { Volume2 } from "lucide-react";
 import clsx from "clsx";
 
-interface PlacedTile {
-  id: string;
-  text: string;
-  originalIndex: number;
-}
-
 interface TranslateProps {
   exercise: StrippedExercise;
   selectedWords: string[];
@@ -69,25 +63,27 @@ export default function TranslateExercise({
       {/* Speech Bubble with Source Text */}
       <div className="flex items-start gap-3">
         <div className="text-4xl filter drop-shadow">🦉</div>
-        <div className="relative bg-polar border-2 border-swan rounded-2xl p-4 sm:p-5 flex items-center gap-3 shadow-sm">
+        <div className="relative bg-[#F7F7F7] dark:bg-[#18272F] border-2 border-[#E5E5E5] dark:border-[#263843] rounded-2xl p-4 sm:p-5 flex items-center gap-3 shadow-sm">
           <button
             type="button"
             onClick={playSourceAudio}
-            className="p-2 rounded-xl bg-selectedCardBg text-macaw hover:brightness-105 active:scale-95 transition cursor-pointer"
+            className="p-2 rounded-xl bg-[#DDF4FF] dark:bg-[#142B36] text-[#1CB0F6] hover:brightness-105 active:scale-95 transition cursor-pointer"
             title="Listen to audio"
           >
-            <Volume2 className="w-5 h-5 fill-macaw stroke-macaw" />
+            <Volume2 className="w-5 h-5 fill-[#1CB0F6] stroke-[#1CB0F6]" />
           </button>
-          <span className="text-lg sm:text-xl font-black text-eel">{exercise.source_text}</span>
+          <span className="text-lg sm:text-xl font-extrabold text-[#3C3C3C] dark:text-white">
+            {exercise.source_text}
+          </span>
           {/* Bubble tail */}
-          <div className="absolute -left-2 top-5 w-3 h-3 bg-polar border-l-2 border-b-2 border-swan transform rotate-45" />
+          <div className="absolute -left-2 top-5 w-3 h-3 bg-[#F7F7F7] dark:bg-[#18272F] border-l-2 border-b-2 border-[#E5E5E5] dark:border-[#263843] transform rotate-45" />
         </div>
       </div>
 
       {/* Target Answer Line / Slots */}
-      <div className="min-h-[76px] border-b-2 border-swan pb-3 flex flex-wrap gap-2.5 items-center">
+      <div className="min-h-[76px] border-b-2 border-[#E5E5E5] dark:border-[#263843] pb-3 flex flex-wrap gap-2.5 items-center">
         {selectedWords.length === 0 ? (
-          <span className="text-wolf text-sm font-bold pl-2 italic">
+          <span className="text-[#AFAFAF] dark:text-[#8598A3] text-sm font-bold pl-2 italic">
             Tap words below or press Backspace to edit...
           </span>
         ) : (
@@ -98,10 +94,10 @@ export default function TranslateExercise({
               disabled={disabled}
               onClick={() => onRemoveWord(idx)}
               className={clsx(
-                "bg-snow text-eel border-2 border-swan border-b-4 font-extrabold text-base px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75 animate-in zoom-in-95",
+                "bg-white dark:bg-[#18272F] text-[#4B4B4B] dark:text-white border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 font-extrabold text-base px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75 animate-in zoom-in-95",
                 disabled
                   ? "cursor-default opacity-80"
-                  : "hover:bg-polar active:translate-y-1 active:border-b-2 cursor-pointer"
+                  : "hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D] active:translate-y-1 active:border-b-2 cursor-pointer"
               )}
             >
               {word}
@@ -116,7 +112,7 @@ export default function TranslateExercise({
           <div key={`bank-${word}-${originalIndex}`} className="relative">
             {/* Recessed placeholder slot left in the bank */}
             {isPlaced && (
-              <div className="border-2 border-dashed border-swan bg-polar/50 rounded-xl h-[46px] px-4 py-2.5 flex items-center justify-center font-extrabold text-base text-transparent select-none pointer-events-none shadow-inner">
+              <div className="border-2 border-dashed border-[#E5E5E5] dark:border-[#263843] bg-[#F7F7F7] dark:bg-[#131F24] rounded-xl h-[46px] px-4 py-2.5 flex items-center justify-center font-extrabold text-base text-transparent select-none pointer-events-none shadow-inner">
                 {word}
               </div>
             )}
@@ -128,10 +124,10 @@ export default function TranslateExercise({
                 disabled={disabled}
                 onClick={() => onAddWord(word)}
                 className={clsx(
-                  "bg-snow text-eel border-2 border-swan border-b-4 font-extrabold text-base px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75",
+                  "bg-white dark:bg-[#18272F] text-[#4B4B4B] dark:text-white border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 font-extrabold text-base px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75",
                   disabled
                     ? "cursor-default opacity-80"
-                    : "hover:bg-polar active:translate-y-1 active:border-b-2 cursor-pointer"
+                    : "hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D] active:translate-y-1 active:border-b-2 cursor-pointer"
                 )}
               >
                 {word}

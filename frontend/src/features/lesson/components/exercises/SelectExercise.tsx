@@ -30,9 +30,32 @@ export default function SelectExercise({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [exercise.options, disabled, onChange]);
 
+  const getEmojiForOption = (text: string, imageKey?: string) => {
+    const lower = text.toLowerCase();
+    if (lower.includes("boy") || lower.includes("niño")) return "👦";
+    if (lower.includes("girl") || lower.includes("niña") || lower.includes("mujer")) return "👧";
+    if (lower.includes("cat") || lower.includes("gato")) return "🐱";
+    if (lower.includes("dog") || lower.includes("perro")) return "🐶";
+    if (lower.includes("apple") || lower.includes("manzana")) return "🍎";
+    if (lower.includes("water") || lower.includes("agua")) return "💧";
+    if (lower.includes("bread") || lower.includes("pan")) return "🍞";
+    if (lower.includes("milk") || lower.includes("leche")) return "🥛";
+    if (lower.includes("sun") || lower.includes("sol")) return "☀️";
+    if (lower.includes("hello") || lower.includes("hola") || lower.includes("adios")) return "👋";
+
+    if (imageKey === "boy") return "👦";
+    if (imageKey === "girl") return "👧";
+    if (imageKey === "cat") return "🐱";
+    if (imageKey === "dog") return "🐶";
+    if (imageKey === "sun") return "☀️";
+    if (imageKey === "hand_wave") return "👋";
+
+    return "💡";
+  };
+
   return (
-    <div className="space-y-4 max-w-xl mx-auto w-full select-none">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="max-w-2xl mx-auto w-full select-none">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 justify-center">
         {exercise.options.map((opt, index) => {
           const isSelected = value === opt.text;
           const badgeNum = index + 1;
@@ -44,39 +67,35 @@ export default function SelectExercise({
               disabled={disabled}
               onClick={() => onChange(opt.text)}
               className={clsx(
-                "relative flex items-center justify-between p-5 rounded-2xl font-extrabold text-base sm:text-lg text-left border-2 border-b-4 transition-all duration-75",
-                disabled ? "cursor-default" : "cursor-pointer active:translate-y-[2px] active:border-b-2",
+                "border-2 border-b-4 rounded-2xl p-4 flex flex-col items-center justify-between min-w-[160px] h-[210px] relative transition-all duration-75 select-none",
+                disabled
+                  ? "cursor-default opacity-80"
+                  : "cursor-pointer active:translate-y-1 active:border-b-2 hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D]",
                 isSelected
-                  ? "bg-selectedCardBg border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6] shadow-sm"
-                  : "bg-snow border-swan border-b-swan/80 hover:bg-polar text-eel"
+                  ? "border-[#1CB0F6] bg-[#DDF4FF] dark:bg-[#142B36] text-[#1CB0F6]"
+                  : "bg-white dark:bg-[#18272F] border-[#E5E5E5] dark:border-[#263843] text-[#4B4B4B] dark:text-white"
               )}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">
-                  {exercise.image_key === "boy"
-                    ? "👦"
-                    : exercise.image_key === "girl"
-                    ? "👧"
-                    : exercise.image_key === "cat"
-                    ? "🐱"
-                    : exercise.image_key === "dog"
-                    ? "🐶"
-                    : exercise.image_key === "sun"
-                    ? "☀️"
-                    : exercise.image_key === "hand_wave"
-                    ? "👋"
-                    : "💡"}
-                </span>
-                <span>{opt.text}</span>
+              {/* Top empty spacing / padding */}
+              <div className="w-full flex justify-start pt-1" />
+
+              {/* Large Center Graphic / Emoji */}
+              <div className="my-auto text-5xl sm:text-6xl filter drop-shadow-sm transform hover:scale-105 transition">
+                {getEmojiForOption(opt.text, exercise.image_key ?? undefined)}
               </div>
 
-              {/* Number key shortcut badge */}
+              {/* Option Text Label */}
+              <div className="font-extrabold text-base sm:text-lg text-center pb-2 px-2">
+                {opt.text}
+              </div>
+
+              {/* Keyboard Shortcut Badge in Bottom-Right Corner */}
               <span
                 className={clsx(
-                  "text-xs font-black px-2.5 py-1 rounded-lg border",
+                  "absolute bottom-3 right-3 text-xs font-black px-2 py-0.5 rounded-lg border transition",
                   isSelected
-                    ? "border-[#1CB0F6] text-[#1CB0F6] bg-snow"
-                    : "border-swan text-wolf bg-polar"
+                    ? "border-[#1CB0F6] text-[#1CB0F6] bg-white dark:bg-[#142B36]"
+                    : "border-[#E5E5E5] dark:border-[#263843] text-[#777777] dark:text-[#8598A3] bg-[#F7F7F7] dark:bg-[#18272F]"
                 )}
               >
                 {badgeNum}

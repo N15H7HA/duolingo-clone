@@ -7,6 +7,7 @@
   --color-polar-val: #F7F7F7;
   --color-swan-val: #E5E5E5;
   --color-eel-val: #4B4B4B;
+  --color-heading-val: #3C3C3C;
   --color-wolf-val: #777777;
   --color-hare-val: #AFAFAF;
   --color-selectedCardBg-val: #DDF4FF;
@@ -19,15 +20,16 @@
 .dark, [data-theme="dark"] {
   --color-snow-val: #131F24;
   --color-polar-val: #18272F;
-  --color-swan-val: #283C45;
-  --color-eel-val: #F7F7F7;
-  --color-wolf-val: #8899A6;
-  --color-hare-val: #5F737E;
-  --color-selectedCardBg-val: #1C3B4E;
-  --color-feedbackGreenBg-val: #1A3D22;
-  --color-feedbackRedBg-val: #3E1D22;
+  --color-swan-val: #263843;
+  --color-eel-val: #FFFFFF;
+  --color-heading-val: #FFFFFF;
+  --color-wolf-val: #8598A3;
+  --color-hare-val: #8598A3;
+  --color-selectedCardBg-val: #142B36;
+  --color-feedbackGreenBg-val: #142B1A;
+  --color-feedbackRedBg-val: #33181A;
   --background: #131F24;
-  --foreground: #F7F7F7;
+  --foreground: #FFFFFF;
 }
 
 @theme {
@@ -45,6 +47,7 @@
   --color-fox: #FF9600;
   --color-beetle: #CE82FF;
   --color-eel: var(--color-eel-val);
+  --color-heading: var(--color-heading-val);
   --color-wolf: var(--color-wolf-val);
   --color-hare: var(--color-hare-val);
   --color-swan: var(--color-swan-val);

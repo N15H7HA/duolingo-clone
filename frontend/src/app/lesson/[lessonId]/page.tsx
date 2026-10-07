@@ -169,7 +169,7 @@ export default function LessonPlayerPage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-snow select-none pb-32">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-[#131F24] select-none pb-36">
       {/* Top Header with Progress and Animated Heart Counter */}
       <LessonHeader
         progressPercentage={progressPercentage}
@@ -178,22 +178,23 @@ export default function LessonPlayerPage() {
         onQuit={abandonLesson}
       />
 
-      {/* Main Exercise View with Horizontal Error Shake on Mistake */}
+      {/* Main Exercise Stage */}
       <main className="flex-1 max-w-2xl mx-auto w-full px-4 sm:px-8 py-6 flex flex-col justify-center">
         <div
           className={clsx(
-            "space-y-6 transition-transform",
+            "space-y-6 transition-transform will-change-transform",
             status === "incorrect" ? "animate-shake" : ""
           )}
         >
-          <h2 className="text-2xl sm:text-3xl font-black text-eel">
+          {/* Prompt in 2xl/3xl font-extrabold text-[#3C3C3C] dark:text-white text-center mb-8 */}
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#3C3C3C] dark:text-white text-center mb-8">
             {currentExercise.prompt}
           </h2>
 
-          {/* Render Exercise Type with Key to ensure clean remounts without state leakage */}
+          {/* Render Exercise Type with Key to ensure clean remounts and hook isolation */}
           {currentExercise.type === "select" && (
             <SelectExercise
-              key={`${currentExercise.id}-${currentIndex}`}
+              key={currentExercise.id}
               exercise={currentExercise}
               value={selectedAnswer}
               onChange={selectOption}
@@ -203,7 +204,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "translate" && (
             <TranslateExercise
-              key={`${currentExercise.id}-${currentIndex}`}
+              key={currentExercise.id}
               exercise={currentExercise}
               selectedWords={selectedWords}
               onAddWord={addWordTile}
@@ -215,7 +216,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "fill_blank" && (
             <FillBlankExercise
-              key={`${currentExercise.id}-${currentIndex}`}
+              key={currentExercise.id}
               exercise={currentExercise}
               value={selectedAnswer}
               onChange={selectOption}
@@ -225,7 +226,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "match_pairs" && (
             <MatchPairsExercise
-              key={`${currentExercise.id}-${currentIndex}`}
+              key={currentExercise.id}
               exercise={currentExercise}
               onChange={selectOption}
               disabled={status === "correct" || status === "incorrect"}
@@ -234,7 +235,7 @@ export default function LessonPlayerPage() {
 
           {currentExercise.type === "type_answer" && (
             <TypeAnswerExercise
-              key={`${currentExercise.id}-${currentIndex}`}
+              key={currentExercise.id}
               exercise={currentExercise}
               value={selectedAnswer}
               onChange={selectOption}
@@ -251,6 +252,7 @@ export default function LessonPlayerPage() {
         hasSelection={hasSelection}
         onCheck={submitAnswer}
         onContinue={nextExercise}
+        onSkip={nextExercise}
         onPractice={() => startLesson(lessonId, true)}
       />
     </div>
