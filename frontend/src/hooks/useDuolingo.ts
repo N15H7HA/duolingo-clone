@@ -41,6 +41,7 @@ export interface SkillNode {
   progress_percentage: number;
   progress_ratio: number;
   status: "completed" | "active" | "locked";
+  is_legendary?: boolean;
   lessons: LessonSummary[];
 }
 

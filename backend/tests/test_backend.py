@@ -9,6 +9,15 @@ from app.models.gamification import League, LeagueMember, DailyXP
 from app.core.clock import AppClock
 
 
+from seed.seed import seed_database
+
+
+@pytest.fixture(scope="module", autouse=True)
+def setup_seed():
+    """Ensure clean seeded state before running tests."""
+    seed_database()
+
+
 @pytest.fixture(scope="session")
 def client():
     return TestClient(app)

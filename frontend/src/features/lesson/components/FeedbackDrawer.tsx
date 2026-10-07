@@ -2,13 +2,14 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Check, X } from "lucide-react";
-import { LessonStatus } from "../store/useLessonStore";
+import { Check, X, Crown, Timer, RotateCcw } from "lucide-react";
+import { LessonStatus, LessonMode } from "../store/useLessonStore";
 import Button3D from "@/components/ui/Button3D";
 import clsx from "clsx";
 
 interface FeedbackDrawerProps {
   status: LessonStatus;
+  mode?: LessonMode;
   feedback: {
     correct: boolean;
     solution?: string;
@@ -20,16 +21,19 @@ interface FeedbackDrawerProps {
   onContinue: () => void;
   onSkip?: () => void;
   onPractice: () => void;
+  onRetry?: () => void;
 }
 
 export default function FeedbackDrawer({
   status,
+  mode = "standard",
   feedback,
   hasSelection,
   onCheck,
   onContinue,
   onSkip,
   onPractice,
+  onRetry,
 }: FeedbackDrawerProps) {
   const router = useRouter();
 
@@ -143,7 +147,7 @@ export default function FeedbackDrawer({
 
             {!isFeedbackActive && (
               <Button3D
-                variant={hasSelection ? "green" : "disabled"}
+                variant={hasSelection ? (mode === "legendary" ? "purple" : "green") : "disabled"}
                 fullWidth
                 size="md"
                 disabled={!hasSelection || status === "checking"}
@@ -156,26 +160,43 @@ export default function FeedbackDrawer({
         </div>
       </footer>
 
-      {/* Out of Hearts Modal */}
+      {/* Out of Hearts / Legendary Challenge Failed Modal */}
       {status === "out_of_hearts" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-white dark:bg-[#18272F] rounded-3xl p-6 sm:p-8 max-w-sm w-full border-2 border-[#E5E5E5] dark:border-[#263843] shadow-2xl text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-[#FFDFE0] dark:bg-[#33181A] mx-auto flex items-center justify-center text-3xl">
-              💔
+              {mode === "legendary" ? "👑" : "💔"}
             </div>
-            <h3 className="text-2xl font-black text-[#4B4B4B] dark:text-white">Out of Hearts!</h3>
+            <h3 className="text-2xl font-black text-[#4B4B4B] dark:text-white">
+              {mode === "legendary" ? "Challenge Failed" : "Out of Hearts!"}
+            </h3>
             <p className="text-sm font-bold text-[#777777] dark:text-[#8598A3]">
-              You ran out of hearts in this session. Practice to earn hearts back or refill with gems.
+              {mode === "legendary"
+                ? "You reached 3 strikes in this Legendary challenge. Try again to claim your +40 XP reward and Legendary trophy!"
+                : "You ran out of hearts in this session. Practice to earn hearts back or refill with gems."}
             </p>
             <div className="space-y-2.5 pt-2">
-              <Button3D
-                variant="green"
-                fullWidth
-                size="md"
-                onClick={onPractice}
-              >
-                Practice for Hearts
-              </Button3D>
+              {mode === "legendary" ? (
+                <Button3D
+                  variant="purple"
+                  fullWidth
+                  size="md"
+                  onClick={onRetry || onPractice}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>TRY AGAIN (+40 XP)</span>
+                </Button3D>
+              ) : (
+                <Button3D
+                  variant="green"
+                  fullWidth
+                  size="md"
+                  onClick={onPractice}
+                >
+                  Practice for Hearts
+                </Button3D>
+              )}
               <Button3D
                 variant="white"
                 fullWidth
@@ -183,6 +204,33 @@ export default function FeedbackDrawer({
                 onClick={() => router.push("/learn")}
               >
                 Back to Path
+              </Button3D>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Time's Up Modal for Timed Speed Practice */}
+      {status === "time_up" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#18272F] rounded-3xl p-6 sm:p-8 max-w-sm w-full border-2 border-[#FFC800]/50 dark:border-[#FFC800]/30 shadow-2xl text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-[#FFF9E6] dark:bg-[#2A2315] mx-auto flex items-center justify-center text-3xl">
+              ⏱️
+            </div>
+            <h3 className="text-2xl font-black text-[#4B4B4B] dark:text-white">
+              Time&apos;s Up!
+            </h3>
+            <p className="text-sm font-bold text-[#777777] dark:text-[#8598A3]">
+              Great hustle! You raced against the clock. Let&apos;s see your speed review results.
+            </p>
+            <div className="space-y-2.5 pt-2">
+              <Button3D
+                variant="gold"
+                fullWidth
+                size="md"
+                onClick={onContinue}
+              >
+                VIEW RESULTS
               </Button3D>
             </div>
           </div>

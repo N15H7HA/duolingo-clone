@@ -30,6 +30,9 @@ class LessonAttempt(Base):
     status: Mapped[str] = mapped_column(
         String(32), default="in_progress", nullable=False
     )  # in_progress, completed, failed, abandoned
+    mode: Mapped[str] = mapped_column(
+        String(32), default="standard", nullable=False
+    )  # standard, practice, mistakes, timed, legendary
     is_practice: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     mistakes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     hearts_lost: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

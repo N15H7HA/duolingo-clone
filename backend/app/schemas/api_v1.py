@@ -54,6 +54,10 @@ class LessonStartResponse(BaseModel):
     lesson_title: str
     is_practice: bool = False
     is_fallback: bool = False
+    mode: str = "standard"  # standard, practice, mistakes, timed, legendary
+    is_legendary: bool = False
+    time_limit_seconds: Optional[int] = None
+    max_strikes: Optional[int] = None
     exercises: List[StrippedExercise]
 
 
@@ -92,6 +96,7 @@ class AttemptCompleteResponse(BaseModel):
     gems: int
     lessons_completed: int
     skill_completed: bool
+    is_legendary: bool = False
 
 
 class HeartRefillResponse(BaseModel):

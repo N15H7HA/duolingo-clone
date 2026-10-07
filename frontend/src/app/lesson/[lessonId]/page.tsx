@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useLessonStore } from "@/features/lesson/store/useLessonStore";
+import { useLessonStore, LessonMode } from "@/features/lesson/store/useLessonStore";
 import LessonHeader from "@/features/lesson/components/LessonHeader";
 import FeedbackDrawer from "@/features/lesson/components/FeedbackDrawer";
 import clsx from "clsx";
@@ -21,7 +21,9 @@ export default function LessonPlayerPage() {
   const router = useRouter();
   const rawLessonId = params?.lessonId;
   const lessonId = Array.isArray(rawLessonId) ? rawLessonId[0] : (rawLessonId as string);
-  const practiceType = (searchParams.get("type") || (lessonId === "mistakes" ? "mistakes" : undefined)) as "mistakes" | "standard" | undefined;
+
+  const practiceType = (searchParams.get("type") || (lessonId === "mistakes" ? "mistakes" : undefined)) as string | undefined;
+  const modeParam = (searchParams.get("mode") || (practiceType === "timed" ? "timed" : undefined)) as LessonMode | undefined;
 
   const {
     exercises,
@@ -29,7 +31,12 @@ export default function LessonPlayerPage() {
     selectedAnswer,
     selectedWords,
     status,
+    mode,
     hearts,
+    strikesRemaining,
+    maxStrikes,
+    timeRemaining,
+    bonusTimeAdded,
     heartLostTrigger,
     feedback,
     lessonTitle,
@@ -48,24 +55,40 @@ export default function LessonPlayerPage() {
     removeLastWordTile,
     submitAnswer,
     nextExercise,
+    tickTimer,
     abandonLesson,
   } = useLessonStore();
 
   // 2. Initialize session on mount
   useEffect(() => {
     if (lessonId) {
-      console.log(`[LessonPlayerPage] Mounting lesson session for ID: ${lessonId}, practiceType: ${practiceType}`);
-      const isPracticeSession = lessonId === "practice" || lessonId === "mistakes" || Boolean(practiceType);
-      startLesson(lessonId, isPracticeSession, practiceType);
+      console.log(
+        `[LessonPlayerPage] Mounting lesson session (ID: ${lessonId}, practiceType: ${practiceType}, mode: ${modeParam})`
+      );
+      const isPracticeSession =
+        lessonId === "practice" ||
+        lessonId === "mistakes" ||
+        Boolean(practiceType) ||
+        modeParam === "timed";
+      startLesson(lessonId, isPracticeSession, practiceType, modeParam);
     } else {
       console.warn("[LessonPlayerPage] Mounted without valid lessonId param");
     }
     return () => {
       abandonLesson();
     };
-  }, [lessonId, practiceType, startLesson, abandonLesson]);
+  }, [lessonId, practiceType, modeParam, startLesson, abandonLesson]);
 
-  // 3. Global Enter key listener for instant check / continue
+  // 3. Timed Practice Countdown Interval
+  useEffect(() => {
+    if (mode !== "timed" || isLoading) return;
+    const interval = setInterval(() => {
+      tickTimer();
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [mode, isLoading, tickTimer]);
+
+  // 4. Global Enter key listener for instant check / continue
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
@@ -77,7 +100,7 @@ export default function LessonPlayerPage() {
 
         if (status === "idle" && hasSel) {
           submitAnswer();
-        } else if (status === "correct" || status === "incorrect") {
+        } else if (status === "correct" || status === "incorrect" || status === "time_up") {
           nextExercise();
         }
       }
@@ -86,7 +109,7 @@ export default function LessonPlayerPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [status, selectedAnswer, selectedWords, exercises, currentIndex, submitAnswer, nextExercise]);
 
-  // 4. Navigate on completion (must run unconditionally before any early returns)
+  // 5. Navigate on completion (must run unconditionally before any early returns)
   useEffect(() => {
     if (status === "completed" && completionResult) {
       const accuracy = Math.round(
@@ -99,19 +122,27 @@ export default function LessonPlayerPage() {
         time: String(timeSeconds),
         streak: String(completionResult.streak),
         title: lessonTitle || "Spanish Lesson",
+        mode: mode || "standard",
+        legendary: completionResult.is_legendary ? "true" : "false",
       });
       router.push(`/lesson/${lessonId}/complete?${queryParams.toString()}`);
     }
-  }, [status, completionResult, totalInitialExercises, mistakesCount, startTime, lessonTitle, lessonId, router]);
+  }, [status, completionResult, totalInitialExercises, mistakesCount, startTime, lessonTitle, lessonId, mode, router]);
 
-  // 5. Early returns ONLY after all hooks are declared
+  // 6. Early returns ONLY after all hooks are declared
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-snow">
         <div className="text-center space-y-4">
-          <span className="text-6xl animate-bounce">🦉</span>
+          <span className="text-6xl animate-bounce">
+            {modeParam === "legendary" ? "👑" : modeParam === "timed" || practiceType === "timed" ? "⏱️" : "🦉"}
+          </span>
           <p className="font-extrabold text-wolf uppercase tracking-wider text-sm">
-            Loading your lesson...
+            {modeParam === "legendary"
+              ? "Preparing Legendary Challenge..."
+              : modeParam === "timed" || practiceType === "timed"
+              ? "Arming Speed Challenge..."
+              : "Loading your lesson..."}
           </p>
         </div>
       </div>
@@ -151,9 +182,11 @@ export default function LessonPlayerPage() {
     return (
       <div className="flex h-screen items-center justify-center bg-snow">
         <div className="text-center space-y-4">
-          <span className="text-6xl animate-bounce">🎉</span>
+          <span className="text-6xl animate-bounce">
+            {mode === "legendary" ? "👑" : "🎉"}
+          </span>
           <p className="font-extrabold text-wolf uppercase tracking-wider text-sm">
-            Completing lesson...
+            {mode === "legendary" ? "Legendary Challenge Mastered!" : "Completing lesson..."}
           </p>
         </div>
       </div>
@@ -173,11 +206,23 @@ export default function LessonPlayerPage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-[#131F24] select-none pb-36">
-      {/* Top Header with Progress and Animated Heart Counter */}
+    <div
+      className={clsx(
+        "flex flex-col min-h-screen select-none pb-36 transition-colors duration-300",
+        mode === "legendary"
+          ? "bg-purple-950/5 dark:bg-[#13111C]"
+          : "bg-white dark:bg-[#131F24]"
+      )}
+    >
+      {/* Top Header with Progress, Timer, and Heart/Strike Counter */}
       <LessonHeader
         progressPercentage={progressPercentage}
         hearts={hearts}
+        mode={mode}
+        timeRemaining={timeRemaining}
+        strikesRemaining={strikesRemaining}
+        maxStrikes={maxStrikes}
+        bonusTimeAdded={bonusTimeAdded}
         heartLostTrigger={heartLostTrigger}
         isPractice={isPractice}
         onQuit={abandonLesson}
@@ -191,12 +236,12 @@ export default function LessonPlayerPage() {
             status === "incorrect" ? "animate-shake" : ""
           )}
         >
-          {/* Prompt in 2xl/3xl font-extrabold text-[#3C3C3C] dark:text-white text-center mb-8 */}
+          {/* Exercise Prompt */}
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#3C3C3C] dark:text-white text-center mb-8">
             {currentExercise.prompt}
           </h2>
 
-          {/* Render Exercise Type with Key to ensure clean remounts and hook isolation */}
+          {/* Exercise Renderers */}
           {currentExercise.type === "select" && (
             <SelectExercise
               key={currentExercise.id}
@@ -253,12 +298,14 @@ export default function LessonPlayerPage() {
       {/* Bottom Interactive Feedback Drawer */}
       <FeedbackDrawer
         status={status}
+        mode={mode}
         feedback={feedback}
         hasSelection={hasSelection}
         onCheck={submitAnswer}
         onContinue={nextExercise}
         onSkip={nextExercise}
         onPractice={() => startLesson(lessonId, true)}
+        onRetry={() => startLesson(lessonId, false, undefined, "legendary")}
       />
     </div>
   );

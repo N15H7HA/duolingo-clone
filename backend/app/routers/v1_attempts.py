@@ -102,8 +102,23 @@ def complete_attempt(
     attempt.status = "completed"
     attempt.finished_at = current_time
 
-    # Calculate XP
-    if attempt.is_practice:
+    # Calculate XP & Mode-specific rewards
+    mode = getattr(attempt, "mode", "standard")
+    is_legendary_complete = False
+
+    if mode == "legendary":
+        xp_earned = 40
+        is_legendary_complete = True
+    elif mode == "timed":
+        # Up to 20 XP scaled with mistakes/speed
+        xp_earned = max(10, 20 - (attempt.mistakes * 2))
+        if user.hearts < 5:
+            user.hearts += 1
+    elif mode == "mistakes":
+        xp_earned = 10
+        if user.hearts < 5:
+            user.hearts += 1
+    elif attempt.is_practice:
         xp_earned = 5
         # Restore +1 heart if hearts < 5
         if user.hearts < 5:
@@ -136,12 +151,34 @@ def complete_attempt(
     # 4. Update Streak
     updated_streak = StreakService.update_streak_on_activity(user)
 
-    # 5. Advance Skill Progress (only for standard lesson attempts)
+    # 5. Advance Skill Progress
     skill = attempt.lesson.skill if attempt.lesson else None
     skill_completed = False
     lessons_completed_count = 0
 
-    if skill and not attempt.is_practice:
+    if skill and mode == "legendary":
+        prog_stmt = select(UserSkillProgress).where(
+            UserSkillProgress.user_id == user.id,
+            UserSkillProgress.skill_id == skill.id,
+        )
+        prog = db.scalar(prog_stmt)
+        if not prog:
+            prog = UserSkillProgress(
+                user_id=user.id,
+                skill_id=skill.id,
+                lessons_completed=skill.lesson_count,
+                is_legendary=True,
+                completed_at=current_time,
+            )
+            db.add(prog)
+        else:
+            prog.is_legendary = True
+            if not prog.completed_at:
+                prog.completed_at = current_time
+        skill_completed = True
+        lessons_completed_count = skill.lesson_count
+        user.gems += 20  # Legendary bonus gems
+    elif skill and not attempt.is_practice and mode == "standard":
         prog_stmt = select(UserSkillProgress).where(
             UserSkillProgress.user_id == user.id,
             UserSkillProgress.skill_id == skill.id,
@@ -175,6 +212,8 @@ def complete_attempt(
         if prog:
             lessons_completed_count = prog.lessons_completed
             skill_completed = prog.lessons_completed >= skill.lesson_count
+            if prog.is_legendary:
+                is_legendary_complete = True
 
     db.commit()
     db.refresh(user)
@@ -190,4 +229,5 @@ def complete_attempt(
         gems=user.gems,
         lessons_completed=lessons_completed_count,
         skill_completed=skill_completed,
+        is_legendary=is_legendary_complete,
     )

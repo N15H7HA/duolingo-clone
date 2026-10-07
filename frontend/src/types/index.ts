@@ -22,6 +22,10 @@ export interface LessonStartResponse {
   lesson_id: number;
   lesson_title: string;
   is_practice: boolean;
+  mode?: string;
+  is_legendary?: boolean;
+  time_limit_seconds?: number;
+  max_strikes?: number;
   exercises: StrippedExercise[];
 }
 
@@ -44,4 +48,5 @@ export interface AttemptCompleteResponse {
   gems: number;
   lessons_completed: number;
   skill_completed: boolean;
+  is_legendary?: boolean;
 }

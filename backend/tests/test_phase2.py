@@ -247,6 +247,68 @@ def test_xp_calculation_unit():
     assert XPService.calculate_lesson_xp(mistakes=1, duration_seconds=300) == 10  # 10 + 0 + 0
 
 
+def test_legendary_challenge_flow(client):
+    """Test Legendary challenge mode on completed skill."""
+    # Skill 1 is completed -> start legendary challenge
+    leg_res = client.post("/api/v1/lessons/1/legendary/start")
+    assert leg_res.status_code == 200
+    leg_data = leg_res.json()
+    assert leg_data["mode"] == "legendary"
+    assert leg_data["max_strikes"] == 3
+    assert len(leg_data["exercises"]) == 8
+
+    attempt_id = leg_data["attempt_id"]
+
+    # Answer a question
+    ex1 = leg_data["exercises"][0]
+    ans_res = client.post(
+        f"/api/v1/attempts/{attempt_id}/answer",
+        json={"exercise_id": ex1["id"], "submitted_answer": "Hola"},
+    )
+    assert ans_res.status_code == 200
+    # Legendary strikes check
+    assert ans_res.json()["hearts"] <= 3
+
+    # Complete legendary challenge -> +40 XP & is_legendary flag
+    comp_res = client.post(
+        f"/api/v1/attempts/{attempt_id}/complete",
+        json={"duration_seconds": 60},
+    )
+    assert comp_res.status_code == 200
+    comp_data = comp_res.json()
+    assert comp_data["xp_earned"] == 40
+    assert comp_data["is_legendary"] is True
+
+
+def test_timed_practice_flow(client):
+    """Test Timed Speed practice mode."""
+    timed_res = client.post("/api/v1/practice/timed/start")
+    assert timed_res.status_code == 200
+    timed_data = timed_res.json()
+    assert timed_data["mode"] == "timed"
+    assert timed_data["time_limit_seconds"] == 90
+    assert len(timed_data["exercises"]) == 12
+
+    attempt_id = timed_data["attempt_id"]
+
+    # Wrong answer does NOT deduct user persistent hearts
+    ex1 = timed_data["exercises"][0]
+    ans_res = client.post(
+        f"/api/v1/attempts/{attempt_id}/answer",
+        json={"exercise_id": ex1["id"], "submitted_answer": "Wrong answer"},
+    )
+    assert ans_res.status_code == 200
+    assert ans_res.json()["out_of_hearts"] is False
+
+    # Complete timed practice -> scaled +20 XP
+    comp_res = client.post(
+        f"/api/v1/attempts/{attempt_id}/complete",
+        json={"duration_seconds": 45},
+    )
+    assert comp_res.status_code == 200
+    assert comp_res.json()["xp_earned"] >= 10
+
+
 def test_accent_stripping_unit():
     """Verify accent stripping and normalization helpers."""
     assert clean_text("¡Hola, Mundo!") == "hola mundo"

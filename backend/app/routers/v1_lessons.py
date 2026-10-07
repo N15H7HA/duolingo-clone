@@ -4,7 +4,7 @@ from sqlalchemy import select
 from app.core.db import get_db
 from app.core.dependencies import get_current_user
 from app.models.user import User
-from app.models.course import Lesson, Exercise
+from app.models.course import Lesson, Exercise, Skill
 from app.models.attempt import LessonAttempt
 from app.schemas.api_v1 import (
     LessonStartResponse,
@@ -94,6 +94,207 @@ def start_lesson(
         lesson_title=lesson.title,
         is_practice=False,
         is_fallback=False,
+        mode="standard",
+        exercises=stripped_exercises,
+    )
+
+
+@router.post("/lessons/{skill_or_lesson_id}/legendary/start", response_model=LessonStartResponse)
+def start_legendary_challenge(
+    skill_or_lesson_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Starts a Legendary Trophy Challenge for a completed skill.
+    Can be initiated with either a skill_id or lesson_id.
+    Enforces 3 strikes maximum rule.
+    Returns 8 harder translation, fill_blank, and type_answer exercises.
+    """
+    # 1. Try to find skill directly
+    skill_stmt = (
+        select(Skill)
+        .where(Skill.id == skill_or_lesson_id)
+        .options(
+            selectinload(Skill.lessons).selectinload(Lesson.exercises).selectinload(Exercise.options),
+            selectinload(Skill.lessons).selectinload(Lesson.exercises).selectinload(Exercise.answers),
+        )
+    )
+    skill = db.scalar(skill_stmt)
+
+    if not skill:
+        # Try to find lesson and its parent skill
+        lesson_stmt = (
+            select(Lesson)
+            .where(Lesson.id == skill_or_lesson_id)
+            .options(
+                selectinload(Lesson.skill).selectinload(Skill.lessons).selectinload(Lesson.exercises).selectinload(Exercise.options),
+            )
+        )
+        lesson_obj = db.scalar(lesson_stmt)
+        if lesson_obj and lesson_obj.skill:
+            skill = lesson_obj.skill
+
+    if not skill:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill or lesson not found for Legendary Challenge",
+        )
+
+    # 2. Gather exercises across the skill's lessons
+    all_exercises = []
+    for l in skill.lessons:
+        for ex in l.exercises:
+            all_exercises.append(ex)
+
+    if not all_exercises:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No exercises found for Legendary Challenge",
+        )
+
+    # Prefer harder types (type_answer, translate, fill_blank)
+    harder_types = ["type_answer", "translate", "fill_blank", "select", "match_pairs"]
+    sorted_exercises = sorted(
+        all_exercises,
+        key=lambda e: harder_types.index(e.type) if e.type in harder_types else 99,
+    )
+    selected_exercises = sorted_exercises[:8]
+
+    first_lesson_id = skill.lessons[0].id if skill.lessons else skill_or_lesson_id
+    current_time = get_current_time(user)
+
+    attempt = LessonAttempt(
+        user_id=user.id,
+        lesson_id=first_lesson_id,
+        status="in_progress",
+        mode="legendary",
+        is_practice=False,
+        mistakes=0,
+        hearts_lost=0,
+        xp_earned=0,
+        started_at=current_time,
+    )
+    db.add(attempt)
+    db.commit()
+    db.refresh(attempt)
+
+    stripped_exercises = []
+    for ex in selected_exercises:
+        stripped_options = [
+            StrippedExerciseOption(
+                id=opt.id,
+                text=opt.text,
+                pair_key=opt.pair_key,
+                side=opt.side,
+                position=opt.position,
+            )
+            for opt in sorted(ex.options, key=lambda o: o.position)
+        ]
+        stripped_exercises.append(
+            StrippedExercise(
+                id=ex.id,
+                lesson_id=ex.lesson_id,
+                position=ex.position,
+                type=ex.type,
+                prompt=ex.prompt,
+                source_text=ex.source_text,
+                image_key=ex.image_key,
+                options=stripped_options,
+            )
+        )
+
+    return LessonStartResponse(
+        attempt_id=attempt.id,
+        lesson_id=first_lesson_id,
+        lesson_title=f"Legendary: {skill.name}",
+        is_practice=False,
+        is_fallback=False,
+        mode="legendary",
+        is_legendary=True,
+        max_strikes=3,
+        exercises=stripped_exercises,
+    )
+
+
+@router.post("/practice/timed/start", response_model=LessonStartResponse)
+def start_timed_practice(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Creates a rapid-fire timed practice attempt with a 90-second global countdown.
+    Generates 12 rapid exercises from the course curriculum.
+    Practice rules: no persistent hearts deducted.
+    """
+    stmt = (
+        select(Exercise)
+        .options(
+            selectinload(Exercise.options),
+            selectinload(Exercise.answers),
+        )
+        .order_by(Exercise.id)
+        .limit(12)
+    )
+    exercises_to_run = list(db.scalars(stmt).all())
+    if not exercises_to_run:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No practice exercises found",
+        )
+
+    first_ex = exercises_to_run[0]
+    lesson_id = first_ex.lesson_id
+
+    current_time = get_current_time(user)
+    attempt = LessonAttempt(
+        user_id=user.id,
+        lesson_id=lesson_id,
+        status="in_progress",
+        mode="timed",
+        is_practice=True,
+        mistakes=0,
+        hearts_lost=0,
+        xp_earned=0,
+        started_at=current_time,
+    )
+    db.add(attempt)
+    db.commit()
+    db.refresh(attempt)
+
+    stripped_exercises = []
+    for ex in exercises_to_run:
+        stripped_options = [
+            StrippedExerciseOption(
+                id=opt.id,
+                text=opt.text,
+                pair_key=opt.pair_key,
+                side=opt.side,
+                position=opt.position,
+            )
+            for opt in sorted(ex.options, key=lambda o: o.position)
+        ]
+        stripped_exercises.append(
+            StrippedExercise(
+                id=ex.id,
+                lesson_id=ex.lesson_id,
+                position=ex.position,
+                type=ex.type,
+                prompt=ex.prompt,
+                source_text=ex.source_text,
+                image_key=ex.image_key,
+                options=stripped_options,
+            )
+        )
+
+    return LessonStartResponse(
+        attempt_id=attempt.id,
+        lesson_id=lesson_id,
+        lesson_title="Speed Challenge",
+        is_practice=True,
+        is_fallback=False,
+        mode="timed",
+        time_limit_seconds=90,
         exercises=stripped_exercises,
     )
 

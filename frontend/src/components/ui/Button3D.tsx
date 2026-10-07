@@ -3,7 +3,7 @@
 import React from "react";
 import clsx from "clsx";
 
-export type ButtonVariant = "green" | "blue" | "red" | "white" | "disabled" | "gold";
+export type ButtonVariant = "green" | "blue" | "red" | "white" | "disabled" | "gold" | "purple";
 
 interface Button3DProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -38,6 +38,8 @@ export default function Button3D({
       "bg-[#FF4B4B] text-white border-[#EA2B2B] hover:brightness-105 active:translate-y-[2px] active:border-b-2 cursor-pointer",
     gold:
       "bg-[#FFC800] text-white border-[#E5A500] hover:brightness-105 active:translate-y-[2px] active:border-b-2 cursor-pointer",
+    purple:
+      "bg-[#8B5CF6] text-white border-[#7C3AED] hover:brightness-105 active:translate-y-[2px] active:border-b-2 cursor-pointer shadow-purple-500/20",
     white:
       "bg-snow text-eel border-swan hover:bg-polar active:translate-y-[2px] active:border-b-2 cursor-pointer",
     disabled:

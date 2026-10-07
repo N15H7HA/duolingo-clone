@@ -137,18 +137,33 @@ class LessonEngine:
         )
         db.add(attempt_ans)
 
-        # Handle mistake - Do NOT deduct hearts during practice sessions
-        if not is_correct and not is_retry and not attempt.is_practice:
-            attempt.mistakes += 1
-            # Decrement user heart
-            remaining_hearts = HeartService.decrement_heart(user, current_time)
-            attempt.hearts_lost += 1
-        else:
-            if not is_correct and not is_retry:
-                attempt.mistakes += 1
-            remaining_hearts = user.hearts
+        # Handle mistake & heart/strike calculations
+        is_legendary = getattr(attempt, "mode", "standard") == "legendary"
+        is_practice_mode = attempt.is_practice or getattr(attempt, "mode", "standard") in ("timed", "mistakes", "practice")
 
-        out_of_hearts = (remaining_hearts <= 0) and not attempt.is_practice
+        if not is_correct and not is_retry:
+            attempt.mistakes += 1
+            if not is_practice_mode and not is_legendary:
+                # Decrement standard user heart
+                remaining_hearts = HeartService.decrement_heart(user, current_time)
+                attempt.hearts_lost += 1
+            elif is_legendary:
+                # Legendary strikes (3 max)
+                remaining_hearts = max(0, 3 - attempt.mistakes)
+            else:
+                remaining_hearts = user.hearts
+        else:
+            if is_legendary:
+                remaining_hearts = max(0, 3 - attempt.mistakes)
+            else:
+                remaining_hearts = user.hearts
+
+        if is_legendary:
+            out_of_hearts = attempt.mistakes >= 3
+        elif is_practice_mode:
+            out_of_hearts = False
+        else:
+            out_of_hearts = remaining_hearts <= 0
 
         db.commit()
 

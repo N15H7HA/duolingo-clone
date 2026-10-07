@@ -75,6 +75,7 @@ class ProgressService:
                     "progress_percentage": progress_percentage,
                     "progress_ratio": ratio,
                     "status": status,
+                    "is_legendary": bool(prog.is_legendary) if prog else False,
                     "lessons": [
                         {
                             "id": l.id,

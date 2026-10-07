@@ -76,6 +76,7 @@ class UserSkillProgress(Base):
         Integer, ForeignKey("skills.id", ondelete="CASCADE"), nullable=False, index=True
     )
     lessons_completed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    is_legendary: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     __table_args__ = (
