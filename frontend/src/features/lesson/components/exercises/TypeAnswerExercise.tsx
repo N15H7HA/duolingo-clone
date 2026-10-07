@@ -70,7 +70,7 @@ export default function TypeAnswerExercise({
               type="button"
               disabled={disabled}
               onClick={() => insertChar(char)}
-              className="w-10 h-10 rounded-xl bg-white dark:bg-[#18272F] border-2 border-b-4 border-[#E5E5E5] dark:border-[#263843] text-[#4B4B4B] dark:text-white font-black text-base hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D] active:translate-y-[2px] active:border-b-2 transition shadow-sm"
+              className="min-w-[44px] min-h-[44px] px-2 rounded-xl bg-white dark:bg-[#18272F] border-2 border-b-4 border-[#E5E5E5] dark:border-[#263843] text-[#4B4B4B] dark:text-white font-black text-lg hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D] active:translate-y-[2px] active:border-b-2 transition shadow-sm touch-manipulation flex items-center justify-center"
             >
               {char}
             </button>

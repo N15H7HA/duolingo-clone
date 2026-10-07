@@ -61,7 +61,7 @@ export default function FeedbackDrawer({
     <>
       <footer
         className={clsx(
-          "fixed bottom-0 left-0 right-0 z-40 min-h-[120px] transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] border-t-2 select-none px-6 sm:px-12 py-6 flex items-center",
+          "fixed bottom-0 left-0 right-0 z-40 min-h-[96px] sm:min-h-[120px] transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] border-t-2 select-none px-4 sm:px-12 py-4 sm:py-6 flex items-center shadow-lg",
           isCorrect
             ? "bg-[#D7FFB8] dark:bg-[#142B1A] border-[#58A700]"
             : isIncorrect
@@ -69,15 +69,15 @@ export default function FeedbackDrawer({
             : "bg-white dark:bg-[#131F24] border-[#E5E5E5] dark:border-[#263843]"
         )}
       >
-        <div className="max-w-4xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-4xl mx-auto w-full flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
           {/* 1. Correct Feedback Drawer Content */}
           {isCorrect && (
-            <div className="flex items-center gap-4 w-full sm:w-auto animate-in slide-in-from-bottom-2 duration-150">
-              <div className="w-14 h-14 rounded-full bg-[#58CC02] text-white flex items-center justify-center font-black text-2xl shadow-sm shrink-0">
-                <Check className="w-8 h-8 stroke-[3.5]" />
+            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto animate-in slide-in-from-bottom-2 duration-150">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#58CC02] text-white flex items-center justify-center font-black text-2xl shadow-sm shrink-0">
+                <Check className="w-7 h-7 sm:w-8 sm:h-8 stroke-[3.5]" />
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-extrabold text-[#58A700] dark:text-[#58CC02]">
+                <h3 className="text-lg sm:text-2xl font-extrabold text-[#58A700] dark:text-[#58CC02]">
                   {feedback?.accent_warning
                     ? "Nicely done! (Pay attention to accents)"
                     : feedback?.cheerTitle || "Nicely done!"}
@@ -93,15 +93,15 @@ export default function FeedbackDrawer({
 
           {/* 2. Incorrect Feedback Drawer Content */}
           {isIncorrect && (
-            <div className="flex items-start gap-4 w-full sm:w-auto animate-in slide-in-from-bottom-2 duration-150">
-              <div className="w-14 h-14 rounded-full bg-[#FF4B4B] text-white flex items-center justify-center font-black text-2xl shadow-sm shrink-0">
-                <X className="w-8 h-8 stroke-[3.5]" />
+            <div className="flex items-start gap-3 sm:gap-4 w-full sm:w-auto animate-in slide-in-from-bottom-2 duration-150">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FF4B4B] text-white flex items-center justify-center font-black text-2xl shadow-sm shrink-0">
+                <X className="w-7 h-7 sm:w-8 sm:h-8 stroke-[3.5]" />
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-extrabold text-[#EA2B2B] dark:text-[#FF4B4B]">
+                <h3 className="text-base sm:text-xl font-extrabold text-[#EA2B2B] dark:text-[#FF4B4B]">
                   Correct solution:
                 </h3>
-                <p className="text-base sm:text-lg font-extrabold text-[#EA2B2B] dark:text-[#FFDFE0]">
+                <p className="text-sm sm:text-lg font-extrabold text-[#EA2B2B] dark:text-[#FFDFE0]">
                   {feedback?.solution || "Check answer"}
                 </p>
               </div>
@@ -114,21 +114,22 @@ export default function FeedbackDrawer({
               <button
                 type="button"
                 onClick={onSkip || onCheck}
-                className="px-6 py-3 rounded-2xl font-extrabold text-sm uppercase tracking-wider text-[#AFAFAF] dark:text-[#8598A3] border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D] active:translate-y-1 active:border-b-2 transition-all cursor-pointer"
+                className="px-6 py-3 rounded-2xl font-extrabold text-sm uppercase tracking-wider text-[#AFAFAF] dark:text-[#8598A3] border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D] active:translate-y-1 active:border-b-2 transition-all cursor-pointer touch-manipulation min-h-[48px]"
               >
                 SKIP
               </button>
             </div>
           )}
 
-          {/* 4. Action Button (Right aligned) */}
-          <div className="w-full sm:w-44 ml-auto">
+          {/* 4. Action Button (Full width on mobile, right aligned on desktop) */}
+          <div className="w-full sm:w-44 sm:ml-auto">
             {isCorrect && (
               <Button3D
                 variant="green"
                 fullWidth
                 size="md"
                 onClick={onContinue}
+                className="touch-manipulation"
               >
                 CONTINUE
               </Button3D>
@@ -140,6 +141,7 @@ export default function FeedbackDrawer({
                 fullWidth
                 size="md"
                 onClick={onContinue}
+                className="touch-manipulation"
               >
                 CONTINUE
               </Button3D>
@@ -152,6 +154,7 @@ export default function FeedbackDrawer({
                 size="md"
                 disabled={!hasSelection || status === "checking"}
                 onClick={onCheck}
+                className="touch-manipulation"
               >
                 {status === "checking" ? "CHECKING..." : "CHECK"}
               </Button3D>

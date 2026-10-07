@@ -55,7 +55,8 @@ export default function SelectExercise({
 
   return (
     <div className="max-w-2xl mx-auto w-full select-none">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 justify-center">
+      {/* Desktop 3-column grid / Mobile vertically-stacked tactile pills */}
+      <div className="flex flex-col sm:grid sm:grid-cols-3 gap-3 sm:gap-4 justify-center w-full max-w-sm sm:max-w-none mx-auto">
         {exercise.options.map((opt, index) => {
           const isSelected = value === opt.text;
           const badgeNum = index + 1;
@@ -67,7 +68,7 @@ export default function SelectExercise({
               disabled={disabled}
               onClick={() => onChange(opt.text)}
               className={clsx(
-                "border-2 border-b-4 rounded-2xl p-4 flex flex-col items-center justify-between min-w-[160px] h-[210px] relative transition-all duration-75 select-none",
+                "border-2 border-b-4 rounded-2xl p-3 sm:p-4 flex flex-row sm:flex-col items-center justify-between min-h-[58px] sm:min-w-[160px] sm:h-[210px] relative transition-all duration-75 select-none touch-manipulation",
                 disabled
                   ? "cursor-default opacity-80"
                   : "cursor-pointer active:translate-y-1 active:border-b-2 hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D]",
@@ -76,23 +77,20 @@ export default function SelectExercise({
                   : "bg-white dark:bg-[#18272F] border-[#E5E5E5] dark:border-[#263843] text-[#4B4B4B] dark:text-white"
               )}
             >
-              {/* Top empty spacing / padding */}
-              <div className="w-full flex justify-start pt-1" />
-
-              {/* Large Center Graphic / Emoji */}
-              <div className="my-auto text-5xl sm:text-6xl filter drop-shadow-sm transform hover:scale-105 transition">
-                {getEmojiForOption(opt.text, exercise.image_key ?? undefined)}
+              {/* Option Left on Mobile / Center Graphic on Desktop */}
+              <div className="flex items-center gap-3 sm:flex-col sm:my-auto">
+                <span className="text-3xl sm:text-6xl filter drop-shadow-sm transform hover:scale-105 transition">
+                  {getEmojiForOption(opt.text, exercise.image_key ?? undefined)}
+                </span>
+                <span className="font-extrabold text-base sm:text-lg text-left sm:text-center sm:pb-2 sm:px-2">
+                  {opt.text}
+                </span>
               </div>
 
-              {/* Option Text Label */}
-              <div className="font-extrabold text-base sm:text-lg text-center pb-2 px-2">
-                {opt.text}
-              </div>
-
-              {/* Keyboard Shortcut Badge in Bottom-Right Corner */}
+              {/* Keyboard Shortcut Badge */}
               <span
                 className={clsx(
-                  "absolute bottom-3 right-3 text-xs font-black px-2 py-0.5 rounded-lg border transition",
+                  "sm:absolute sm:bottom-3 sm:right-3 text-xs font-black px-2 py-0.5 rounded-lg border transition shrink-0",
                   isSelected
                     ? "border-[#1CB0F6] text-[#1CB0F6] bg-white dark:bg-[#142B36]"
                     : "border-[#E5E5E5] dark:border-[#263843] text-[#777777] dark:text-[#8598A3] bg-[#F7F7F7] dark:bg-[#18272F]"

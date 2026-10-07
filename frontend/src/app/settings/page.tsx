@@ -33,7 +33,7 @@ export default function SettingsPage() {
       <div className="flex-1 flex flex-col min-w-0 border-r-2 border-swan/40">
         <TopBar />
 
-        <main className="flex-1 overflow-y-auto max-w-2xl mx-auto w-full px-4 sm:px-8 py-8 space-y-8 select-none">
+        <main className="flex-1 overflow-y-auto max-w-2xl mx-auto w-full px-4 sm:px-8 py-8 space-y-8 select-none pb-24 sm:pb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-eel">Settings</h1>
             <p className="text-wolf font-bold text-sm mt-1">Manage your learning goals and preferences</p>

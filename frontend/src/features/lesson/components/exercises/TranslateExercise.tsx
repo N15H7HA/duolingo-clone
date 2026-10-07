@@ -94,7 +94,7 @@ export default function TranslateExercise({
               disabled={disabled}
               onClick={() => onRemoveWord(idx)}
               className={clsx(
-                "bg-white dark:bg-[#18272F] text-[#4B4B4B] dark:text-white border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 font-extrabold text-base px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75 animate-in zoom-in-95",
+                "bg-white dark:bg-[#18272F] text-[#4B4B4B] dark:text-white border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 font-extrabold text-base min-h-[48px] px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75 animate-in zoom-in-95 touch-manipulation",
                 disabled
                   ? "cursor-default opacity-80"
                   : "hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D] active:translate-y-1 active:border-b-2 cursor-pointer"
@@ -107,12 +107,12 @@ export default function TranslateExercise({
       </div>
 
       {/* Word Bank with Recessed Placeholder Slots */}
-      <div className="flex flex-wrap gap-3 justify-center pt-2 min-h-[110px]">
+      <div className="flex flex-wrap gap-2.5 sm:gap-3 justify-center pt-2 min-h-[110px]">
         {bankSlots.map(({ word, isPlaced, originalIndex }) => (
           <div key={`bank-${word}-${originalIndex}`} className="relative">
             {/* Recessed placeholder slot left in the bank */}
             {isPlaced && (
-              <div className="border-2 border-dashed border-[#E5E5E5] dark:border-[#263843] bg-[#F7F7F7] dark:bg-[#131F24] rounded-xl h-[46px] px-4 py-2.5 flex items-center justify-center font-extrabold text-base text-transparent select-none pointer-events-none shadow-inner">
+              <div className="border-2 border-dashed border-[#E5E5E5] dark:border-[#263843] bg-[#F7F7F7] dark:bg-[#131F24] rounded-xl min-h-[48px] px-4 py-2.5 flex items-center justify-center font-extrabold text-base text-transparent select-none pointer-events-none shadow-inner">
                 {word}
               </div>
             )}
@@ -124,7 +124,7 @@ export default function TranslateExercise({
                 disabled={disabled}
                 onClick={() => onAddWord(word)}
                 className={clsx(
-                  "bg-white dark:bg-[#18272F] text-[#4B4B4B] dark:text-white border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 font-extrabold text-base px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75",
+                  "bg-white dark:bg-[#18272F] text-[#4B4B4B] dark:text-white border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 font-extrabold text-base min-h-[48px] px-4 py-2.5 rounded-xl shadow-sm transition-all duration-75 touch-manipulation",
                   disabled
                     ? "cursor-default opacity-80"
                     : "hover:bg-[#F7F7F7] dark:hover:bg-[#1F333D] active:translate-y-1 active:border-b-2 cursor-pointer"

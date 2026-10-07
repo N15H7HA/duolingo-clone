@@ -69,7 +69,7 @@ export default function FillBlankExercise({
               disabled={disabled}
               onClick={() => onChange(opt.text)}
               className={clsx(
-                "relative flex items-center gap-3 px-6 py-3.5 rounded-2xl font-extrabold text-base sm:text-lg border-2 border-b-4 transition-all duration-75 shadow-sm",
+                "relative flex items-center gap-3 px-5 sm:px-6 py-3 sm:py-3.5 min-h-[48px] rounded-2xl font-extrabold text-base sm:text-lg border-2 border-b-4 transition-all duration-75 shadow-sm touch-manipulation",
                 disabled ? "cursor-default" : "cursor-pointer active:translate-y-[2px] active:border-b-2",
                 isSelected
                   ? "bg-[#DDF4FF] dark:bg-[#142B36] border-[#1CB0F6] border-b-[#1899D6] text-[#1CB0F6]"

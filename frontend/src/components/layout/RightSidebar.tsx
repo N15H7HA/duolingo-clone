@@ -11,7 +11,7 @@ export default function RightSidebar() {
   const { data: leaderboard } = useLeaderboard();
 
   return (
-    <aside className="hidden xl:flex flex-col w-[368px] p-6 gap-6 select-none shrink-0">
+    <aside className="hidden lg:flex flex-col w-[368px] p-6 gap-6 select-none shrink-0 border-l border-[#E5E5E5] dark:border-[#263843]">
       {/* 1. Emerald League Card */}
       <div className="bg-white dark:bg-[#18272F] rounded-3xl border-2 border-[#E5E5E5] dark:border-[#263843] p-5 shadow-sm space-y-3">
         <div className="flex items-center justify-between">

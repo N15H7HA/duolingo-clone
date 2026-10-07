@@ -39,15 +39,18 @@ interface SkillNodeProps {
   };
   unitColor?: string;
   horizontalOffset: number;
+  mobileOffset?: number;
 }
 
 export default function SkillNode({
   skill,
   unitColor = "#58CC02",
   horizontalOffset,
+  mobileOffset,
 }: SkillNodeProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const isLegendary = Boolean(skill.is_legendary);
+  const mobOffset = mobileOffset ?? Math.round(horizontalOffset * 0.6);
 
   // Icon mapping helper
   const renderIcon = () => {
@@ -114,10 +117,15 @@ export default function SkillNode({
   return (
     <div
       className={clsx(
-        "h-24 my-4 flex justify-center items-center relative select-none transition-transform duration-300 will-change-transform",
+        "h-24 my-4 flex justify-center items-center relative select-none transition-transform duration-300 will-change-transform translate-x-[var(--mob-x)] md:translate-x-[var(--desk-x)] touch-manipulation",
         isPopoverOpen ? "z-40" : "z-10"
       )}
-      style={{ transform: `translateX(${horizontalOffset}px)` }}
+      style={
+        {
+          "--mob-x": `${mobOffset}px`,
+          "--desk-x": `${horizontalOffset}px`,
+        } as React.CSSProperties
+      }
     >
       {/* Floating Bouncing Speech Bubble on Active Node (-top-16) */}
       {skill.status === "active" && !isPopoverOpen && (

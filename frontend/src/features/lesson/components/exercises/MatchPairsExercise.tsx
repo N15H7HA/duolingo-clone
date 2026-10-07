@@ -109,7 +109,7 @@ export default function MatchPairsExercise({
         disabled={disabled || isMatched || (mismatched && isSelected)}
         onClick={onSelect}
         className={clsx(
-          "w-full p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center transition-all duration-150 select-none",
+          "w-full min-h-[52px] p-3.5 sm:p-4 rounded-2xl font-extrabold text-sm sm:text-base text-center transition-all duration-150 select-none touch-manipulation",
           isMatched
             ? "opacity-30 pointer-events-none scale-95 border-2 border-emerald-500/40 text-emerald-500 bg-emerald-500/10"
             : isSelected
