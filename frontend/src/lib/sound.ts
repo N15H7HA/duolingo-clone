@@ -1,6 +1,6 @@
 "use client";
 
-// Sound effects utility with instant Web Audio / HTML5 audio support
+// Sound effects utility with instant Web Audio / HTML5 audio support and strict toggle enforcement
 
 export type SoundType =
   | "correct"
@@ -12,8 +12,39 @@ export type SoundType =
 
 const soundCache: Partial<Record<SoundType, HTMLAudioElement>> = {};
 
+/**
+ * Checks whether sound effects are currently enabled.
+ * Defaults to true unless explicitly disabled in localStorage or settings.
+ */
+export function isSoundEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const stored = localStorage.getItem("sound_effects_enabled");
+    if (stored !== null) {
+      return stored !== "false";
+    }
+  } catch {
+    // Fallback if localStorage access is restricted
+  }
+  return true;
+}
+
+/**
+ * Updates the sound effects preference in localStorage and cache.
+ */
+export function setSoundEnabled(enabled: boolean): void {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem("sound_effects_enabled", enabled ? "true" : "false");
+    } catch {
+      // Ignore storage errors
+    }
+  }
+}
+
 export function playSound(type: SoundType, volume = 0.8) {
   if (typeof window === "undefined") return;
+  if (!isSoundEnabled()) return;
 
   try {
     const path = `/sounds/${type}.mp3`;
@@ -27,16 +58,18 @@ export function playSound(type: SoundType, volume = 0.8) {
     }
 
     audio.volume = volume;
-    audio.play().catch((err) => {
+    audio.play().catch(() => {
       // Fallback synthesizer using Web Audio API if file autoplay is restricted
       synthesizeFallbackSound(type, volume);
     });
-  } catch (err) {
+  } catch {
     synthesizeFallbackSound(type, volume);
   }
 }
 
 function synthesizeFallbackSound(type: SoundType, volume: number) {
+  if (!isSoundEnabled()) return;
+
   try {
     const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (!AudioCtx) return;
@@ -84,10 +117,30 @@ function synthesizeFallbackSound(type: SoundType, volume: number) {
 }
 
 export const sound = {
-  playCorrect: (volume = 0.8) => playSound("correct", volume),
-  playIncorrect: (volume = 0.8) => playSound("incorrect", volume),
-  playComplete: (volume = 0.8) => playSound("complete", volume),
-  playTap: (volume = 0.5) => playSound("tap", volume),
-  playLegendaryComplete: (volume = 0.9) => playSound("legendary_complete", volume),
-  playTimerWarning: (volume = 0.6) => playSound("timer_warning", volume),
+  isSoundEnabled,
+  setSoundEnabled,
+  playCorrect: (volume = 0.8) => {
+    if (!isSoundEnabled()) return;
+    playSound("correct", volume);
+  },
+  playIncorrect: (volume = 0.8) => {
+    if (!isSoundEnabled()) return;
+    playSound("incorrect", volume);
+  },
+  playComplete: (volume = 0.8) => {
+    if (!isSoundEnabled()) return;
+    playSound("complete", volume);
+  },
+  playTap: (volume = 0.5) => {
+    if (!isSoundEnabled()) return;
+    playSound("tap", volume);
+  },
+  playLegendaryComplete: (volume = 0.9) => {
+    if (!isSoundEnabled()) return;
+    playSound("legendary_complete", volume);
+  },
+  playTimerWarning: (volume = 0.6) => {
+    if (!isSoundEnabled()) return;
+    playSound("timer_warning", volume);
+  },
 };

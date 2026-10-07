@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchApi } from "@/lib/api";
+import { sound } from "@/lib/sound";
 
 export interface UserProfile {
   id: number;
@@ -158,6 +159,10 @@ export function useUpdateSettings() {
           ...previousUser,
           ...newSettings,
         });
+      }
+
+      if (typeof newSettings.sound_enabled === "boolean") {
+        sound.setSoundEnabled(newSettings.sound_enabled);
       }
 
       if (typeof newSettings.dark_mode === "boolean") {

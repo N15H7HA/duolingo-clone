@@ -1,18 +1,37 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import RightSidebar from "@/components/layout/RightSidebar";
 import TopBar from "@/components/ui/TopBar";
 import { useMe, useUpdateSettings, useAdvanceDay, useResetDemo } from "@/hooks/useDuolingo";
 import Button3D from "@/components/ui/Button3D";
-import { Volume2, VolumeX, Moon, Sun, Target, FastForward, RotateCcw, Shield, HelpCircle, LogOut } from "lucide-react";
+import { sound } from "@/lib/sound";
+import {
+  Volume2,
+  VolumeX,
+  Moon,
+  Sun,
+  Target,
+  FastForward,
+  RotateCcw,
+  Shield,
+  HelpCircle,
+  LogOut,
+} from "lucide-react";
 
 export default function SettingsPage() {
   const { data: user, isLoading } = useMe();
   const updateSettings = useUpdateSettings();
   const advanceDay = useAdvanceDay();
   const resetDemo = useResetDemo();
+
+  // Sync sound setting on load
+  useEffect(() => {
+    if (user && typeof user.sound_enabled === "boolean") {
+      sound.setSoundEnabled(user.sound_enabled);
+    }
+  }, [user]);
 
   if (isLoading || !user) {
     return (
@@ -25,6 +44,12 @@ export default function SettingsPage() {
   }
 
   const goals = [10, 20, 30, 50];
+
+  const handleToggleSound = () => {
+    const newValue = !user.sound_enabled;
+    sound.setSoundEnabled(newValue);
+    updateSettings.mutate({ sound_enabled: newValue });
+  };
 
   return (
     <div className="flex min-h-screen bg-snow">
@@ -91,8 +116,9 @@ export default function SettingsPage() {
 
               <button
                 type="button"
-                onClick={() => updateSettings.mutate({ sound_enabled: !user.sound_enabled })}
-                className={`w-14 h-8 rounded-full transition-colors relative p-1 ${
+                onClick={handleToggleSound}
+                aria-label="Toggle Sound Effects"
+                className={`w-14 h-8 rounded-full transition-colors relative p-1 cursor-pointer ${
                   user.sound_enabled ? "bg-[#58CC02]" : "bg-swan"
                 }`}
               >
@@ -120,7 +146,8 @@ export default function SettingsPage() {
               <button
                 type="button"
                 onClick={() => updateSettings.mutate({ dark_mode: !user.dark_mode })}
-                className={`w-14 h-8 rounded-full transition-colors relative p-1 ${
+                aria-label="Toggle Dark Mode"
+                className={`w-14 h-8 rounded-full transition-colors relative p-1 cursor-pointer ${
                   user.dark_mode ? "bg-[#58CC02]" : "bg-swan"
                 }`}
               >
