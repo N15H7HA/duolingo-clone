@@ -103,10 +103,16 @@ def complete_attempt(
     attempt.finished_at = current_time
 
     # Calculate XP
-    xp_earned = XPService.calculate_lesson_xp(
-        mistakes=attempt.mistakes,
-        duration_seconds=req.duration_seconds,
-    )
+    if attempt.is_practice:
+        xp_earned = 5
+        # Restore +1 heart if hearts < 5
+        if user.hearts < 5:
+            user.hearts += 1
+    else:
+        xp_earned = XPService.calculate_lesson_xp(
+            mistakes=attempt.mistakes,
+            duration_seconds=req.duration_seconds,
+        )
     attempt.xp_earned = xp_earned
 
     # 1. Update User XP
@@ -130,12 +136,12 @@ def complete_attempt(
     # 4. Update Streak
     updated_streak = StreakService.update_streak_on_activity(user)
 
-    # 5. Advance Skill Progress
-    skill = attempt.lesson.skill
+    # 5. Advance Skill Progress (only for standard lesson attempts)
+    skill = attempt.lesson.skill if attempt.lesson else None
     skill_completed = False
     lessons_completed_count = 0
 
-    if skill:
+    if skill and not attempt.is_practice:
         prog_stmt = select(UserSkillProgress).where(
             UserSkillProgress.user_id == user.id,
             UserSkillProgress.skill_id == skill.id,
@@ -160,6 +166,15 @@ def complete_attempt(
                 prog.completed_at = current_time
                 # Award bonus gems for completing skill
                 user.gems += 50
+    elif skill:
+        prog_stmt = select(UserSkillProgress).where(
+            UserSkillProgress.user_id == user.id,
+            UserSkillProgress.skill_id == skill.id,
+        )
+        prog = db.scalar(prog_stmt)
+        if prog:
+            lessons_completed_count = prog.lessons_completed
+            skill_completed = prog.lessons_completed >= skill.lesson_count
 
     db.commit()
     db.refresh(user)

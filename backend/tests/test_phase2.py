@@ -184,6 +184,34 @@ def test_practice_lesson_endpoint(client):
     assert len(data["exercises"]) == 5
 
 
+def test_practice_mistakes_flow(client):
+    """Test mistakes practice flow: summary and starting mistakes review."""
+    # 1. Check practice summary
+    sum_res = client.get("/api/v1/practice/summary")
+    assert sum_res.status_code == 200
+    summary = sum_res.json()
+    assert "mistakes_count" in summary
+    assert "hearts" in summary
+
+    # 2. Start mistakes practice
+    mistakes_res = client.post("/api/v1/practice/mistakes/start")
+    assert mistakes_res.status_code == 200
+    mistakes_data = mistakes_res.json()
+    assert mistakes_data["is_practice"] is True
+    assert mistakes_data["lesson_title"] == "Mistakes Review"
+    assert len(mistakes_data["exercises"]) > 0
+
+    # 3. Verify completing practice awards +1 heart if < 5 and +5 XP
+    attempt_id = mistakes_data["attempt_id"]
+    complete_res = client.post(
+        f"/api/v1/attempts/{attempt_id}/complete",
+        json={"duration_seconds": 30},
+    )
+    assert complete_res.status_code == 200
+    comp_data = complete_res.json()
+    assert comp_data["xp_earned"] == 5
+
+
 def test_leaderboard_endpoint(client):
     """Test GET /api/v1/leaderboard returns Bronze league with user 1 ranked."""
     res = client.get("/api/v1/leaderboard")

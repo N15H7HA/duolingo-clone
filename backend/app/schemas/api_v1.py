@@ -53,7 +53,14 @@ class LessonStartResponse(BaseModel):
     lesson_id: int
     lesson_title: str
     is_practice: bool = False
+    is_fallback: bool = False
     exercises: List[StrippedExercise]
+
+
+class PracticeSummaryResponse(BaseModel):
+    mistakes_count: int
+    hearts: int
+    words_count: int
 
 
 class AnswerSubmitRequest(BaseModel):

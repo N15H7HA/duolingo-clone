@@ -137,16 +137,18 @@ class LessonEngine:
         )
         db.add(attempt_ans)
 
-        # Handle mistake
-        if not is_correct and not is_retry:
+        # Handle mistake - Do NOT deduct hearts during practice sessions
+        if not is_correct and not is_retry and not attempt.is_practice:
             attempt.mistakes += 1
             # Decrement user heart
             remaining_hearts = HeartService.decrement_heart(user, current_time)
             attempt.hearts_lost += 1
         else:
+            if not is_correct and not is_retry:
+                attempt.mistakes += 1
             remaining_hearts = user.hearts
 
-        out_of_hearts = (remaining_hearts <= 0)
+        out_of_hearts = (remaining_hearts <= 0) and not attempt.is_practice
 
         db.commit()
 

@@ -10,6 +10,7 @@ interface LessonHeaderProps {
   progressPercentage: number;
   hearts: number;
   heartLostTrigger?: boolean;
+  isPractice?: boolean;
   onQuit: () => void;
 }
 
@@ -17,6 +18,7 @@ export default function LessonHeader({
   progressPercentage,
   hearts,
   heartLostTrigger = false,
+  isPractice = false,
   onQuit,
 }: LessonHeaderProps) {
   const router = useRouter();
@@ -52,21 +54,28 @@ export default function LessonHeader({
           </div>
         </div>
 
-        {/* Hearts count: red heart icon with bold number */}
-        <div
-          className={clsx(
-            "flex items-center gap-1.5 font-extrabold text-[#FF4B4B] transition-transform",
-            heartLostTrigger ? "animate-heart-loss scale-110" : ""
-          )}
-        >
-          <Heart
+        {/* Hearts counter / Practice badge */}
+        {isPractice ? (
+          <div className="flex items-center gap-1.5 font-extrabold text-[#58CC02] bg-[#D7FFB8] dark:bg-[#142B1A] px-3 py-1 rounded-full border border-[#58CC02]/30 shadow-xs">
+            <Heart className="w-4 h-4 fill-[#58CC02] stroke-[#58CC02]" />
+            <span className="text-xs font-black tracking-wider uppercase">Practice (∞)</span>
+          </div>
+        ) : (
+          <div
             className={clsx(
-              "w-6 h-6 fill-[#FF4B4B] stroke-[#FF4B4B] drop-shadow-sm transition-transform",
-              heartLostTrigger ? "scale-125 fill-[#EA2B2B] stroke-[#EA2B2B]" : ""
+              "flex items-center gap-1.5 font-extrabold text-[#FF4B4B] transition-transform",
+              heartLostTrigger ? "animate-heart-loss scale-110" : ""
             )}
-          />
-          <span className="text-xl font-extrabold">{hearts}</span>
-        </div>
+          >
+            <Heart
+              className={clsx(
+                "w-6 h-6 fill-[#FF4B4B] stroke-[#FF4B4B] drop-shadow-sm transition-transform",
+                heartLostTrigger ? "scale-125 fill-[#EA2B2B] stroke-[#EA2B2B]" : ""
+              )}
+            />
+            <span className="text-xl font-extrabold">{hearts}</span>
+          </div>
+        )}
       </header>
 
       {/* Quit Confirmation Modal */}

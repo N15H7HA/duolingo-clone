@@ -44,7 +44,7 @@ interface LessonState {
   error: string | null;
 
   // Actions
-  startLesson: (lessonId: number | string, isPractice?: boolean) => Promise<void>;
+  startLesson: (lessonId: number | string, isPractice?: boolean, practiceType?: "mistakes" | "standard") => Promise<void>;
   selectOption: (val: string) => void;
   addWordTile: (word: string) => void;
   removeWordTile: (index: number) => void;
@@ -78,11 +78,21 @@ export const useLessonStore = create<LessonState>((set, get) => ({
   isLoading: true,
   error: null,
 
-  startLesson: async (lessonId, isPractice = false) => {
-    console.log(`[LessonStore] Starting lesson session (ID: ${lessonId}, isPractice: ${isPractice})`);
+  startLesson: async (lessonId: number | string, isPractice = false, practiceType?: "mistakes" | "standard") => {
+    const isMistakesMode = lessonId === "mistakes" || lessonId === "practice-mistakes" || practiceType === "mistakes";
+    const isPracticeMode = isPractice || isMistakesMode || lessonId === "practice";
+
+    console.log(
+      `[LessonStore] Starting lesson session (ID: ${lessonId}, isPractice: ${isPracticeMode}, type: ${practiceType || (isMistakesMode ? "mistakes" : "standard")})`
+    );
     set({ isLoading: true, error: null, heartLostTrigger: false });
     try {
-      const endpoint = isPractice ? "/practice/start" : `/lessons/${lessonId}/start`;
+      const endpoint = isMistakesMode
+        ? "/practice/mistakes/start"
+        : isPracticeMode
+        ? "/practice/start"
+        : `/lessons/${lessonId}/start`;
+
       const data = await fetchApi<LessonStartResponse>(endpoint, {
         method: "POST",
       });
@@ -93,9 +103,9 @@ export const useLessonStore = create<LessonState>((set, get) => ({
 
       set({
         attemptId: data.attempt_id,
-        lessonId: Number(lessonId),
+        lessonId: typeof lessonId === "number" ? lessonId : data.lesson_id,
         lessonTitle: data.lesson_title,
-        isPractice: data.is_practice,
+        isPractice: data.is_practice || isPracticeMode,
         exercises: data.exercises,
         currentIndex: 0,
         selectedAnswer: null,
@@ -213,9 +223,9 @@ export const useLessonStore = create<LessonState>((set, get) => ({
         const updatedExercises = [...exercises, currentExercise];
 
         set({
-          status: fb.out_of_hearts ? "out_of_hearts" : "incorrect",
+          status: fb.out_of_hearts && !get().isPractice ? "out_of_hearts" : "incorrect",
           hearts: fb.hearts,
-          heartLostTrigger: true,
+          heartLostTrigger: !get().isPractice,
           exercises: updatedExercises,
           mistakesCount: get().mistakesCount + 1,
           feedback: {

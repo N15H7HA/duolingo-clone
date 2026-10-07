@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useLessonStore } from "@/features/lesson/store/useLessonStore";
 import LessonHeader from "@/features/lesson/components/LessonHeader";
 import FeedbackDrawer from "@/features/lesson/components/FeedbackDrawer";
@@ -17,9 +17,11 @@ import TypeAnswerExercise from "@/features/lesson/components/exercises/TypeAnswe
 export default function LessonPlayerPage() {
   // 1. All hooks declared unconditionally at the very top
   const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const rawLessonId = params?.lessonId;
   const lessonId = Array.isArray(rawLessonId) ? rawLessonId[0] : (rawLessonId as string);
+  const practiceType = (searchParams.get("type") || (lessonId === "mistakes" ? "mistakes" : undefined)) as "mistakes" | "standard" | undefined;
 
   const {
     exercises,
@@ -31,6 +33,7 @@ export default function LessonPlayerPage() {
     heartLostTrigger,
     feedback,
     lessonTitle,
+    isPractice,
     completionResult,
     completedCount,
     totalInitialExercises,
@@ -51,15 +54,16 @@ export default function LessonPlayerPage() {
   // 2. Initialize session on mount
   useEffect(() => {
     if (lessonId) {
-      console.log(`[LessonPlayerPage] Mounting lesson session for ID: ${lessonId}`);
-      startLesson(lessonId);
+      console.log(`[LessonPlayerPage] Mounting lesson session for ID: ${lessonId}, practiceType: ${practiceType}`);
+      const isPracticeSession = lessonId === "practice" || lessonId === "mistakes" || Boolean(practiceType);
+      startLesson(lessonId, isPracticeSession, practiceType);
     } else {
       console.warn("[LessonPlayerPage] Mounted without valid lessonId param");
     }
     return () => {
       abandonLesson();
     };
-  }, [lessonId, startLesson, abandonLesson]);
+  }, [lessonId, practiceType, startLesson, abandonLesson]);
 
   // 3. Global Enter key listener for instant check / continue
   useEffect(() => {
@@ -175,6 +179,7 @@ export default function LessonPlayerPage() {
         progressPercentage={progressPercentage}
         hearts={hearts}
         heartLostTrigger={heartLostTrigger}
+        isPractice={isPractice}
         onQuit={abandonLesson}
       />
 

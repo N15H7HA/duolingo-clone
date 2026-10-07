@@ -95,6 +95,19 @@ export function usePath() {
   });
 }
 
+export interface PracticeSummary {
+  mistakes_count: number;
+  hearts: number;
+  words_count: number;
+}
+
+export function usePracticeSummary() {
+  return useQuery<PracticeSummary>({
+    queryKey: ["practice-summary"],
+    queryFn: () => fetchApi<PracticeSummary>("/practice/summary"),
+  });
+}
+
 export function useLeaderboard() {
   return useQuery<LeaderboardData>({
     queryKey: ["league-leaderboard"],
