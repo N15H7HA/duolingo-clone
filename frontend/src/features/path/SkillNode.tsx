@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import {
@@ -40,6 +40,10 @@ interface SkillNodeProps {
   unitColor?: string;
   horizontalOffset: number;
   mobileOffset?: number;
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+  nodeType?: "skill" | "chest" | "trophy";
 }
 
 export default function SkillNode({
@@ -47,10 +51,15 @@ export default function SkillNode({
   unitColor = "#58CC02",
   horizontalOffset,
   mobileOffset,
+  isOpen,
+  onToggle,
+  onClose,
+  nodeType = "skill",
 }: SkillNodeProps) {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const isLegendary = Boolean(skill.is_legendary);
   const mobOffset = mobileOffset ?? Math.round(horizontalOffset * 0.6);
+  const isChest = nodeType === "chest" || skill.icon === "chest";
+  const isTrophy = nodeType === "trophy" || skill.icon === "trophy";
 
   // Icon mapping helper
   const renderIcon = () => {
@@ -61,6 +70,12 @@ export default function SkillNode({
       return <Crown className="w-9 h-9 text-amber-300 fill-amber-300 drop-shadow-md stroke-[2.5]" />;
     }
     if (skill.status === "completed") {
+      if (isTrophy) {
+        return <Trophy className="w-9 h-9 text-amber-400 fill-amber-300 stroke-[2.5]" />;
+      }
+      if (isChest) {
+        return <Gift className="w-9 h-9 text-amber-400 fill-amber-300 stroke-[2.5]" />;
+      }
       return <Check className="w-9 h-9 text-white stroke-[3.5]" />;
     }
 
@@ -95,14 +110,14 @@ export default function SkillNode({
   const currentLessonTitle =
     skill.lessons?.find((l) => l.id === lessonIdToLaunch)?.title ||
     skill.lessons?.[0]?.title ||
-    "Master Spanish phrases and words";
+    "Master Spanish phrases and vocabulary";
 
   const isClickable = skill.status === "active" || skill.status === "completed";
 
   let nodeButtonStyle = "";
   if (isLegendary) {
     nodeButtonStyle =
-      "bg-[#8B5CF6] border-[#6D28D9] text-white hover:brightness-105 active:translate-y-[2px] active:border-b-[4px] ring-4 ring-[#FFC800]/50 shadow-[0_0_15px_rgba(255,200,0,0.3)]";
+      "bg-[#8B5CF6] border-[#6D28D9] text-white hover:brightness-105 active:translate-y-[2px] active:border-b-[4px] ring-4 ring-[#FFC800]/50 shadow-[0_0_18px_rgba(255,200,0,0.35)]";
   } else if (skill.status === "completed") {
     nodeButtonStyle =
       "bg-[#FFC800] border-[#E5A500] text-white hover:brightness-105 active:translate-y-[2px] active:border-b-[4px]";
@@ -117,8 +132,8 @@ export default function SkillNode({
   return (
     <div
       className={clsx(
-        "h-24 my-4 flex justify-center items-center relative select-none transition-transform duration-300 will-change-transform translate-x-[var(--mob-x)] md:translate-x-[var(--desk-x)] touch-manipulation",
-        isPopoverOpen ? "z-40" : "z-10"
+        "h-24 my-5 sm:my-6 flex justify-center items-center relative select-none transition-transform duration-300 will-change-transform translate-x-[var(--mob-x)] md:translate-x-[var(--desk-x)] touch-manipulation",
+        isOpen ? "z-50" : "z-10"
       )}
       style={
         {
@@ -128,8 +143,8 @@ export default function SkillNode({
       }
     >
       {/* Floating Bouncing Speech Bubble on Active Node (-top-16) */}
-      {skill.status === "active" && !isPopoverOpen && (
-        <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-20 animate-bounce pointer-events-none">
+      {skill.status === "active" && !isOpen && (
+        <div className="absolute -top-14 left-1/2 -translate-x-1/2 z-20 animate-bounce pointer-events-none">
           <div className="bg-white dark:bg-[#18272F] text-[#58CC02] px-4 py-1.5 rounded-2xl font-black text-xs uppercase tracking-wider border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 shadow-md flex items-center gap-1.5 whitespace-nowrap">
             <Sparkles className="w-3.5 h-3.5 fill-[#58CC02]" />
             <span>START</span>
@@ -175,11 +190,11 @@ export default function SkillNode({
         )}
 
         <button
-          onClick={() => isClickable && setIsPopoverOpen(!isPopoverOpen)}
+          onClick={() => isClickable && onToggle()}
           disabled={skill.status === "locked"}
           aria-label={`${skill.name} - ${isLegendary ? "Legendary Master" : skill.status}`}
           className={clsx(
-            "w-20 h-20 rounded-full border-b-[6px] flex items-center justify-center font-extrabold text-2xl relative transition-all duration-75 shadow-sm focus:outline-none",
+            "w-20 h-20 rounded-full border-b-[6px] flex items-center justify-center font-extrabold text-2xl relative transition-all duration-75 shadow-sm focus:outline-none cursor-pointer disabled:cursor-not-allowed",
             nodeButtonStyle
           )}
         >
@@ -187,33 +202,105 @@ export default function SkillNode({
         </button>
       </div>
 
-      {/* Floating Self-Contained Popover on Click */}
-      {isPopoverOpen && (
-        <>
-          {/* Transparent Backdrop to dismiss popover when clicking outside */}
-          <div
-            className="fixed inset-0 z-30"
-            onClick={() => setIsPopoverOpen(false)}
-          />
+      {/* Floating Single Popover on Click */}
+      {isOpen && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-[92px] left-1/2 -translate-x-1/2 z-50 w-72 sm:w-80 bg-white dark:bg-[#18272F] rounded-3xl p-5 border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 text-left"
+        >
+          {/* Top pointer arrow */}
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-[#18272F] border-t-2 border-l-2 border-[#E5E5E5] dark:border-[#263843] transform rotate-45" />
 
-          {/* Popover Card */}
-          <div className="absolute top-[96px] z-40 w-72 sm:w-84 bg-white dark:bg-[#18272F] rounded-3xl p-5 border-2 border-[#E5E5E5] dark:border-[#263843] border-b-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            {/* Top pointer arrow */}
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-[#18272F] border-t-2 border-l-2 border-[#E5E5E5] dark:border-[#263843] transform rotate-45" />
-
-            <div className="relative text-left space-y-3">
+          {/* Chest Node Popover Content */}
+          {isChest ? (
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className={clsx(
-                  "text-xs font-black uppercase tracking-wider flex items-center gap-1",
-                  isLegendary ? "text-purple-600 dark:text-purple-400" : "text-[#777777] dark:text-[#8598A3]"
-                )}>
+                <span className="text-xs font-black uppercase tracking-wider text-amber-500 flex items-center gap-1">
+                  <Gift className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                  <span>Bonus Reward</span>
+                </span>
+                <span className="text-xs font-black text-[#58CC02]">UNLOCKED</span>
+              </div>
+              <div>
+                <h4 className="text-xl font-black text-[#4B4B4B] dark:text-white">
+                  Unit Chest Unlocked!
+                </h4>
+                <p className="text-xs font-bold text-[#777777] dark:text-[#8598A3] mt-0.5">
+                  Great job reaching this checkpoint in your learning path!
+                </p>
+              </div>
+              <div className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl p-3 border border-amber-200 dark:border-amber-800/40 flex items-center justify-between">
+                <span className="text-xs font-black text-amber-700 dark:text-amber-400">Bonus Gems</span>
+                <span className="text-sm font-black text-amber-600 dark:text-amber-300 flex items-center gap-1">
+                  💎 +50 GEMS
+                </span>
+              </div>
+              <Button3D
+                variant="gold"
+                fullWidth
+                size="md"
+                onClick={onClose}
+              >
+                CLAIM REWARD
+              </Button3D>
+            </div>
+          ) : isTrophy ? (
+            /* Trophy Node Popover Content */
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black uppercase tracking-wider text-amber-500 flex items-center gap-1">
+                  <Trophy className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                  <span>Unit Champion</span>
+                </span>
+                <span className="text-xs font-black text-[#58CC02]">100% COMPLETE</span>
+              </div>
+              <div>
+                <h4 className="text-xl font-black text-[#4B4B4B] dark:text-white">
+                  Unit Mastery Trophy
+                </h4>
+                <p className="text-xs font-bold text-[#777777] dark:text-[#8598A3] mt-0.5">
+                  You completed every single skill in this unit! You're a Spanish superstar.
+                </p>
+              </div>
+              <div className="bg-purple-50 dark:bg-purple-950/30 rounded-2xl p-3 border border-purple-200 dark:border-purple-800/40 flex items-center justify-between">
+                <span className="text-xs font-black text-purple-700 dark:text-purple-400">Unit Bonus</span>
+                <span className="text-sm font-black text-purple-600 dark:text-purple-300 flex items-center gap-1">
+                  👑 +100 XP EARNED
+                </span>
+              </div>
+              <Button3D
+                variant="purple"
+                fullWidth
+                size="md"
+                onClick={onClose}
+              >
+                AWESOME!
+              </Button3D>
+            </div>
+          ) : (
+            /* Standard Skill Stage Popover */
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span
+                  className={clsx(
+                    "text-xs font-black uppercase tracking-wider flex items-center gap-1",
+                    isLegendary
+                      ? "text-purple-600 dark:text-purple-400"
+                      : skill.status === "completed"
+                      ? "text-amber-500"
+                      : "text-[#777777] dark:text-[#8598A3]"
+                  )}
+                >
                   {isLegendary ? (
                     <>
                       <Crown className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                       <span>Level: Legendary Master</span>
                     </>
                   ) : skill.status === "completed" ? (
-                    "Level: Legendary"
+                    <>
+                      <Crown className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                      <span>Level: Legendary</span>
+                    </>
                   ) : (
                     "Active Skill"
                   )}
@@ -234,16 +321,20 @@ export default function SkillNode({
                   {isLegendary
                     ? "You mastered this skill at legendary level! Practice anytime."
                     : skill.status === "completed"
-                    ? "Prove your mastery with no hints and earn 40 XP!"
+                    ? "Prove your mastery with no hints and earn +40 XP!"
                     : currentLessonTitle}
                 </p>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons for Completed Nodes (Legendary + Practice) */}
               {skill.status === "completed" ? (
                 <div className="space-y-2 pt-1">
                   {!isLegendary && (
-                    <Link href={`/lesson/${lessonIdToLaunch}?mode=legendary`} className="block">
+                    <Link
+                      href={`/lesson/${lessonIdToLaunch}?mode=legendary`}
+                      onClick={onClose}
+                      className="block"
+                    >
                       <Button3D
                         variant="purple"
                         fullWidth
@@ -255,7 +346,11 @@ export default function SkillNode({
                       </Button3D>
                     </Link>
                   )}
-                  <Link href={`/lesson/${lessonIdToLaunch}?mode=practice`} className="block">
+                  <Link
+                    href={`/lesson/${lessonIdToLaunch}?mode=practice`}
+                    onClick={onClose}
+                    className="block"
+                  >
                     <Button3D
                       variant="gold"
                       fullWidth
@@ -268,19 +363,29 @@ export default function SkillNode({
                   </Link>
                 </div>
               ) : (
-                <Link href={`/lesson/${lessonIdToLaunch}`} className="block pt-1">
-                  <Button3D
-                    variant="green"
-                    fullWidth
-                    size="md"
+                /* Action Button for Active Nodes */
+                <div className="space-y-2 pt-1">
+                  <Link
+                    href={`/lesson/${lessonIdToLaunch}`}
+                    onClick={onClose}
+                    className="block"
                   >
-                    START (+10 XP)
-                  </Button3D>
-                </Link>
+                    <Button3D
+                      variant="green"
+                      fullWidth
+                      size="md"
+                    >
+                      START (+10 XP)
+                    </Button3D>
+                  </Link>
+                  <p className="text-[11px] font-bold text-center text-[#AFAFAF] dark:text-[#8598A3]">
+                    Complete all lessons to unlock Legendary (+40 XP)
+                  </p>
+                </div>
               )}
             </div>
-          </div>
-        </>
+          )}
+        </div>
       )}
     </div>
   );
