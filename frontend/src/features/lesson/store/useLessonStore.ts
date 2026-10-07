@@ -6,6 +6,7 @@ import {
   AnswerFeedbackResponse,
   AttemptCompleteResponse,
 } from "@/types";
+import { playSound } from "@/lib/sound";
 
 export type LessonStatus =
   | "idle"
@@ -118,11 +119,13 @@ export const useLessonStore = create<LessonState>((set, get) => ({
 
   selectOption: (val: string) => {
     if (get().status === "correct" || get().status === "incorrect") return;
+    playSound("tap", 0.35);
     set({ selectedAnswer: val });
   },
 
   addWordTile: (word: string) => {
     if (get().status === "correct" || get().status === "incorrect") return;
+    playSound("tap", 0.35);
     const newWords = [...get().selectedWords, word];
     set({
       selectedWords: newWords,
@@ -132,6 +135,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
 
   removeWordTile: (index: number) => {
     if (get().status === "correct" || get().status === "incorrect") return;
+    playSound("tap", 0.35);
     const newWords = get().selectedWords.filter((_, i) => i !== index);
     set({
       selectedWords: newWords,
@@ -143,6 +147,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
     if (get().status === "correct" || get().status === "incorrect") return;
     const words = get().selectedWords;
     if (words.length === 0) return;
+    playSound("tap", 0.35);
     const newWords = words.slice(0, -1);
     set({
       selectedWords: newWords,
@@ -181,6 +186,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
       );
 
       if (fb.correct) {
+        playSound("correct");
         const newUnique = uniqueCorrectIds.includes(currentExercise.id)
           ? uniqueCorrectIds
           : [...uniqueCorrectIds, currentExercise.id];
@@ -201,6 +207,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
           },
         });
       } else {
+        playSound("incorrect");
         // Persistent Retry Queue (Spaced Repetition Loop):
         // Append failed exercise to the end of the exercises queue
         const updatedExercises = [...exercises, currentExercise];
@@ -238,6 +245,7 @@ export const useLessonStore = create<LessonState>((set, get) => ({
       });
     } else {
       // Lesson complete
+      playSound("complete");
       const durationSeconds = Math.max(1, Math.round((Date.now() - startTime) / 1000));
       try {
         const comp = await fetchApi<AttemptCompleteResponse>(
