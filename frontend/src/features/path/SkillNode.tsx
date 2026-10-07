@@ -102,7 +102,7 @@ export default function SkillNode({
   let nodeButtonStyle = "";
   if (isLegendary) {
     nodeButtonStyle =
-      "bg-[#8B5CF6] border-[#7C3AED] text-white hover:brightness-105 active:translate-y-[2px] active:border-b-[4px] ring-4 ring-amber-400/50 shadow-[0_0_20px_rgba(139,92,246,0.5)]";
+      "bg-[#8B5CF6] border-[#6D28D9] text-white hover:brightness-105 active:translate-y-[2px] active:border-b-[4px] ring-4 ring-[#FFC800]/50 shadow-[0_0_15px_rgba(255,200,0,0.3)]";
   } else if (skill.status === "completed") {
     nodeButtonStyle =
       "bg-[#FFC800] border-[#E5A500] text-white hover:brightness-105 active:translate-y-[2px] active:border-b-[4px]";
@@ -210,10 +210,10 @@ export default function SkillNode({
                   {isLegendary ? (
                     <>
                       <Crown className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                      <span>Legendary Master</span>
+                      <span>Level: Legendary Master</span>
                     </>
                   ) : skill.status === "completed" ? (
-                    "Completed Skill"
+                    "Level: Legendary"
                   ) : (
                     "Active Skill"
                   )}
@@ -234,7 +234,7 @@ export default function SkillNode({
                   {isLegendary
                     ? "You mastered this skill at legendary level! Practice anytime."
                     : skill.status === "completed"
-                    ? "Skill completed! Level up to Legendary or practice to refresh."
+                    ? "Prove your mastery with no hints and earn 40 XP!"
                     : currentLessonTitle}
                 </p>
               </div>

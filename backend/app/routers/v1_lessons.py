@@ -17,17 +17,23 @@ from app.core.clock import get_current_time
 router = APIRouter(tags=["Lessons & Practice"])
 
 
+from typing import Optional
+
 @router.post("/lessons/{lesson_id}/start", response_model=LessonStartResponse)
 def start_lesson(
     lesson_id: int,
+    mode: Optional[str] = None,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
-    Starts a standard lesson attempt.
-    Rejects with 409 Conflict if the user is out of hearts.
+    Starts a standard lesson attempt or legendary challenge if mode='legendary'.
+    Rejects with 409 Conflict if the user is out of hearts in standard mode.
     Returns stripped exercise queue without is_correct flags.
     """
+    if mode == "legendary":
+        return start_legendary_challenge(skill_or_lesson_id=lesson_id, user=user, db=db)
+
     if user.hearts <= 0:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -100,6 +106,7 @@ def start_lesson(
 
 
 @router.post("/lessons/{skill_or_lesson_id}/legendary/start", response_model=LessonStartResponse)
+@router.post("/skills/{skill_or_lesson_id}/legendary/start", response_model=LessonStartResponse)
 def start_legendary_challenge(
     skill_or_lesson_id: int,
     user: User = Depends(get_current_user),

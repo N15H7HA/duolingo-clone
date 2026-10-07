@@ -222,6 +222,7 @@ def complete_attempt(
         attempt_id=attempt.id,
         status=attempt.status,
         xp_earned=xp_earned,
+        xp_gained=xp_earned,
         mistakes=attempt.mistakes,
         total_xp=user.xp_total,
         streak=updated_streak,

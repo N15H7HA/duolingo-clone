@@ -89,6 +89,7 @@ class AttemptCompleteResponse(BaseModel):
     attempt_id: int
     status: str
     xp_earned: int
+    xp_gained: Optional[int] = None
     mistakes: int
     total_xp: int
     streak: int
