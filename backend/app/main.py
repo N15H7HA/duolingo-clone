@@ -25,9 +25,22 @@ from app.routers import (
 # Auto-create tables if they don't exist
 Base.metadata.create_all(bind=engine)
 
+tags_metadata = [
+    {"name": "User & Profile", "description": "Learner profile, statistics, and preference management."},
+    {"name": "Learning Path", "description": "Curriculum course tree and skill progression."},
+    {"name": "Lessons & Practice", "description": "Lesson initiation, generic practice, and mistakes review."},
+    {"name": "Attempt Engine", "description": "Real-time answer validation and atomic attempt completion."},
+    {"name": "Hearts & Economy", "description": "Heart refills and gem economy."},
+    {"name": "Leaderboard & Leagues", "description": "Weekly tiered tournament rankings with seeded competitors."},
+    {"name": "Developer Sandbox", "description": "Time-machine day simulation and database reset utilities."},
+    {"name": "System Health", "description": "Database connectivity and health probes."},
+]
+
 app = FastAPI(
     title="Duolingo Clone API",
+    description="Production-grade, fullstack language learning API with gamification, lazy heart regeneration, and spaced repetition mistake reviews.",
     version="1.0.0",
+    openapi_tags=tags_metadata,
     openapi_url="/api/v1/openapi.json",
     docs_url="/api/v1/docs",
     redoc_url="/api/v1/redoc",
